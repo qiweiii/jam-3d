@@ -11,9 +11,15 @@ import {
   Vector3,
 } from "three";
 
+/** Bright near the kidney, dissolving outward: only far-from-core ends fade. */
+const TAIL_NEAR = 3;
+const TAIL_FAR = 9.5;
+const radialFade = (d: number) => Math.max(0, Math.min(1, (TAIL_FAR - d) / (TAIL_FAR - TAIL_NEAR)));
+
 export type Stream = {
   points: Points;
   pos: Float32Array;
+  colors: Float32Array;
   seeds: Float32Array;
   curve: CatmullRomCurve3;
   speed: number;
@@ -36,8 +42,8 @@ export function makeRibbon(curve: CatmullRomCurve3, radius: number, color: numbe
   const pos = geom.getAttribute("position");
   const colors = new Float32Array(pos.count * 3);
   for (let i = 0; i < pos.count; i++) {
-    const t = Math.floor(i / (radial + 1)) / tubular;
-    const fade = Math.min(t / 0.18, 1) * Math.min((1 - t) / 0.18, 1);
+
+    const fade = radialFade(Math.hypot(pos.getX(i), pos.getY(i), pos.getZ(i)));
     colors[i * 3] = fade;
     colors[i * 3 + 1] = fade;
     colors[i * 3 + 2] = fade;
@@ -56,23 +62,27 @@ export function makeRibbon(curve: CatmullRomCurve3, radius: number, color: numbe
 
 export function makeStream(curve: CatmullRomCurve3, count: number, color: number, size: number, speed: number, spread: number): Stream {
   const pos = new Float32Array(count * 3);
+  // RGBA vertex colors: alpha carries the tail fade (three's vertexAlphas path)
+  const colors = new Float32Array(count * 4).fill(1);
   const seeds = new Float32Array(count);
   for (let i = 0; i < count; i++) seeds[i] = Math.random();
   const geom = new BufferGeometry();
   geom.setAttribute("position", new BufferAttribute(pos, 3));
+  geom.setAttribute("color", new BufferAttribute(colors, 4));
   const points = new Points(
     geom,
     new PointsMaterial({
       color,
       size,
       sizeAttenuation: true,
+      vertexColors: true,
       transparent: true,
       opacity: 0.95,
       blending: AdditiveBlending,
       depthWrite: false,
     }),
   );
-  return { points, pos, seeds, curve, speed, spread };
+  return { points, pos, colors, seeds, curve, speed, spread };
 }
 
 export function tickStream(s: Stream, time: number, tmp: Vector3): void {
@@ -82,11 +92,14 @@ export function tickStream(s: Stream, time: number, tmp: Vector3): void {
     const u = (seed + time * s.speed) % 1;
     s.curve.getPointAt(u, tmp);
     const j = i * 3;
+    const k = i * 4;
     const wobble = Math.sin(time * 7 + i) * s.spread;
     s.pos[j] = tmp.x + wobble;
     s.pos[j + 1] = tmp.y + Math.cos(time * 5 + i * 0.3) * s.spread;
     s.pos[j + 2] = tmp.z + Math.sin(time * 4 + i * 0.17) * s.spread;
+    const fade = radialFade(tmp.length());
+    s.colors[k + 3] = fade;
   }
-  const attr = s.points.geometry.getAttribute("position");
-  attr.needsUpdate = true;
+  s.points.geometry.getAttribute("position").needsUpdate = true;
+  s.points.geometry.getAttribute("color").needsUpdate = true;
 }
