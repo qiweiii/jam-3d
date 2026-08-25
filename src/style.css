@@ -1,0 +1,207 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #050506;
+}
+
+#app,
+canvas,
+.labels {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+.labels {
+  pointer-events: none;
+}
+
+.tag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: var(--tag, #f4f1ea);
+  text-shadow: 0 0 6px #050506, 0 0 16px #050506, 0 1px 3px #050506;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tag-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tag-meta {
+  font-size: 10px;
+  opacity: 0.72;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag.is-hidden {
+  display: none;
+}
+
+.term {
+  position: relative;
+  display: inline-block;
+  pointer-events: auto;
+  cursor: help;
+  border-bottom: 1px dotted color-mix(in srgb, var(--tag, #f4f1ea) 70%, transparent);
+}
+
+.term-plain {
+  border-bottom: 0;
+}
+
+.bubble {
+  position: fixed;
+  z-index: 20;
+  visibility: hidden;
+  box-sizing: border-box;
+  width: var(--bubble-w, 16rem);
+  margin: 0;
+  white-space: normal;
+  text-align: left;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.35;
+  color: #e8e6e0;
+  text-shadow: none;
+  pointer-events: none;
+  user-select: text;
+  cursor: text;
+}
+
+.bubble.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.bubble-bottom {
+  transform: translateX(-50%);
+}
+
+.bubble-top {
+  transform: translate(-50%, -100%);
+}
+
+.bubble-right {
+  transform: translateY(-50%);
+}
+
+.bubble-left {
+  transform: translate(-100%, -50%);
+}
+
+.bubble-card {
+  padding: 0.5rem 0.7rem 0.6rem;
+  background: #12141a;
+  border: 1px solid #2a3140;
+}
+
+.bubble-title {
+  margin: 0 0 0.4rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f3efe6;
+}
+
+.bubble ul {
+  margin: 0;
+  padding: 0 0 0 1rem;
+}
+
+.bubble li + li {
+  margin-top: 0.35rem;
+}
+
+.bubble a {
+  color: #8ec8e0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+#app[data-lod="core"] .tag-title,
+#app[data-lod="package"] .tag-title {
+  font-size: 13px;
+}
+
+#app[data-lod="core"] .tag-meta,
+#app[data-lod="package"] .tag-meta {
+  font-size: 11.5px;
+}
+
+@font-face {
+  font-family: "Computer Modern";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/cmunrm.ttf") format("truetype");
+}
+
+.mast {
+  position: fixed;
+  z-index: 2;
+  top: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  color: #f3efe6;
+  text-shadow: 0 0 28px #050506, 0 1px 2px #050506;
+  transition: opacity 0.6s ease;
+}
+
+.mast-jam {
+  margin: 0;
+  font-family: "Computer Modern", Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  font-weight: 400;
+  font-variant: small-caps;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.mast-jam .term > span:first-child {
+  position: relative;
+  top: 0.09em;
+}
+
+.mast.is-hidden,
+.mast.is-hidden .term {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lod {
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.85rem;
+}
+
+.lod button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #6b717a;
+  font: 500 0.68rem/1 ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+.lod button[aria-current="true"] {
+  color: #f3efe6;
+}
