@@ -20,24 +20,20 @@ import { HERO, NOW_BLOCK } from "../lod";
 import { TERMS } from "../refs";
 import { tag } from "./tag";
 
-const LOOKUP = 0x5ec8e8;
-
 export type Machine = {
   group: Group;
   wallpaper: Group;
   hull: Mesh;
   hullEdges: LineSegments;
   ghosts: InstancedMesh;
-  daBalls: InstancedMesh;
   ghostMat: MeshStandardMaterial;
-  daMat: MeshStandardMaterial;
   hullMat: MeshBasicMaterial;
   hullEdgeMat: LineBasicMaterial;
   heroMat: MeshStandardMaterial;
   heroShell: Mesh;
 };
 
-/** The whole JAM at machine scale: hull, ghost cores, D³L balls, hero shell, wallpaper rings. */
+/** The whole JAM at machine scale: hull, ghost cores, hero shell, wallpaper rings. */
 export function buildMachine(): Machine {
   const group = new Group();
 
@@ -88,8 +84,9 @@ export function buildMachine(): Machine {
     opacity: 0.42,
     depthWrite: false,
   });
-  const heroShell = new Mesh(new SphereGeometry(1.55, 32, 32), heroMat);
-  heroShell.position.copy(HERO);
+  // Core chamber: a round ball over kidney + refine only; store, state and streams flow outside it.
+  const heroShell = new Mesh(new SphereGeometry(0.33, 32, 32), heroMat);
+  heroShell.position.copy(HERO).add(new Vector3(0.08, 0, 0));
   group.add(heroShell);
 
   const dummy = new Object3D();
@@ -127,37 +124,10 @@ export function buildMachine(): Machine {
   }
   group.add(ghosts);
 
-  const daGeom = new SphereGeometry(0.16, 8, 8);
-  const daMat = new MeshStandardMaterial({
-    color: 0x0a2430,
-    emissive: LOOKUP,
-    emissiveIntensity: 0.95,
-    roughness: 0.35,
-    metalness: 0.1,
-    transparent: true,
-    opacity: 0.9,
-  });
-  const daCount = 70;
-  const daBalls = new InstancedMesh(daGeom, daMat, daCount);
-  for (let i = 0; i < daCount; i++) {
-    dummy.position.set(
-      hull.position.x + (Math.random() - 0.5) * (hullW - 5),
-      hull.position.y + (Math.random() - 0.5) * (hullH - 5),
-      hull.position.z + (Math.random() - 0.5) * (hullD - 5),
-    );
-    pushOut(HERO, 3.6);
-    pushOut(NOW_BLOCK, 3.6);
-    dummy.scale.setScalar(0.7 + (i % 4) * 0.18);
-    dummy.setRotationFromQuaternion(q);
-    dummy.updateMatrix();
-    daBalls.setMatrixAt(i, dummy.matrix);
-  }
-  group.add(daBalls);
-
   const fieldTag = tag("cores", "341", "#c8c4bc", "machine");
-  fieldTag.position.set(hull.position.x + 6.5, hull.position.y - 1.2, hull.position.z);
+  fieldTag.position.set(hull.position.x + 6.5, hull.position.y + 1.1, hull.position.z);
   group.add(fieldTag);
-  const daTag = tag("DA", "data lake", "#5ec8e8", "machine");
+  const daTag = tag("DA", "data lake", "#b8c0c8", "machine");
   daTag.position.set(hull.position.x - 5.5, hull.position.y + 2.4, hull.position.z);
   group.add(daTag);
   wrapTerm(daTag.element.querySelector(".tag-title") ?? daTag.element, "DA", TERMS.da);
@@ -169,9 +139,7 @@ export function buildMachine(): Machine {
     hull,
     hullEdges,
     ghosts,
-    daBalls,
     ghostMat,
-    daMat,
     hullMat,
     hullEdgeMat,
     heroMat,

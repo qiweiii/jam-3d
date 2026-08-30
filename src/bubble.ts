@@ -63,6 +63,8 @@ export function attachBubble(host: HTMLElement, spec: Term, label?: string): voi
   let hideTimer = 0;
   let follow = 0;
   const show = () => {
+    const tag = host.closest(".tag");
+    if (tag?.classList.contains("is-hidden")) return;
     window.clearTimeout(hideTimer);
     host.classList.add("is-open");
     bubble.classList.add("is-open");
@@ -94,6 +96,12 @@ export function attachBubble(host: HTMLElement, spec: Term, label?: string): voi
   bubble.addEventListener("mouseenter", show);
   bubble.addEventListener("mouseleave", laterHide);
   bubble.addEventListener("mousedown", (e) => e.stopPropagation());
+}
+
+export function hideOpenBubbles(): void {
+  for (const el of document.querySelectorAll(".bubble.is-open, .term.is-open")) {
+    el.classList.remove("is-open");
+  }
 }
 
 /** Wrap the first case-insensitive match of `word` inside `el`. */

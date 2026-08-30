@@ -42,7 +42,6 @@ export function makeRibbon(curve: CatmullRomCurve3, radius: number, color: numbe
   const pos = geom.getAttribute("position");
   const colors = new Float32Array(pos.count * 3);
   for (let i = 0; i < pos.count; i++) {
-
     const fade = radialFade(Math.hypot(pos.getX(i), pos.getY(i), pos.getZ(i)));
     colors[i * 3] = fade;
     colors[i * 3 + 1] = fade;
@@ -103,3 +102,4 @@ export function tickStream(s: Stream, time: number, tmp: Vector3): void {
   s.points.geometry.getAttribute("position").needsUpdate = true;
   s.points.geometry.getAttribute("color").needsUpdate = true;
 }
+

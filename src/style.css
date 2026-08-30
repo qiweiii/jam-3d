@@ -42,6 +42,7 @@ canvas,
 
 .tag.is-hidden {
   display: none;
+  pointer-events: none;
 }
 
 .term {

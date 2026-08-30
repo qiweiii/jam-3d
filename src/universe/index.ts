@@ -1,5 +1,5 @@
 import { Color, InstancedMesh, LineSegments, Mesh, Points, Scene, Vector3 } from "three";
-import { attachBubble } from "../bubble";
+import { attachBubble, hideOpenBubbles } from "../bubble";
 import { frames, HOME_LOD, LODS, lodIndex, stepLod, type LodId } from "../lod";
 import { TERMS } from "../refs";
 import { buildAnatomy } from "./anatomy";
@@ -90,13 +90,11 @@ export function createUniverse(host: HTMLElement): Universe {
 
   const applyOuter = (t: number) => {
     machine.ghostMat.opacity = 0.82 * t;
-    machine.daMat.opacity = 0.9 * t;
     machine.hullMat.opacity = 0.05 * t;
     machine.hullEdgeMat.opacity = 0.55 * t;
     machine.heroMat.opacity = 0.1 + 0.32 * t;
     const show = t > 0.03;
     machine.ghosts.visible = show;
-    machine.daBalls.visible = show;
     machine.hull.visible = show;
     machine.hullEdges.visible = show;
     machine.heroShell.visible = true;
@@ -108,6 +106,7 @@ export function createUniverse(host: HTMLElement): Universe {
       const allow = (el.dataset.lod ?? "").split(",");
       el.classList.toggle("is-hidden", !allow.includes(id));
     }
+    hideOpenBubbles();
   };
 
   const setLod = (next: LodId, instant: boolean) => {
@@ -140,7 +139,7 @@ export function createUniverse(host: HTMLElement): Universe {
       controls.maxDistance = frame.maxDist;
       controls.update();
     }
-    anatomy.group.visible = next !== "stf";
+    anatomy.group.visible = next !== "machine";
     chain.group.visible = next === "package" || next === "block" || next === "stf";
     chain.stf.visible = next === "stf";
     journey.packet.visible = next === "package";
@@ -192,7 +191,7 @@ export function createUniverse(host: HTMLElement): Universe {
     const d = e.ctrlKey ? -e.deltaY : e.deltaY;
     dollyBy(d * 0.0026);
   };
-  host.addEventListener("wheel", onWheel, { passive: false });
+  window.addEventListener("wheel", onWheel, { passive: false, capture: true });
 
   let lastScale = 1;
   const onGestureStart = (e: Event) => {
@@ -205,8 +204,23 @@ export function createUniverse(host: HTMLElement): Universe {
     dollyBy((scale - lastScale) * 8);
     lastScale = scale;
   };
-  host.addEventListener("gesturestart", onGestureStart, { passive: false });
-  host.addEventListener("gesturechange", onGestureChange, { passive: false });
+  window.addEventListener("gesturestart", onGestureStart, { passive: false, capture: true });
+  window.addEventListener("gesturechange", onGestureChange, { passive: false, capture: true });
+
+  const onZoomKey = (e: KeyboardEvent) => {
+    if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
+    if (e.key === "+" || e.key === "=") {
+      e.preventDefault();
+      dollyBy(0.25);
+    } else if (e.key === "-") {
+      e.preventDefault();
+      dollyBy(-0.25);
+    } else if (e.key === "0") {
+      e.preventDefault();
+      setLod(lod, false);
+    }
+  };
+  window.addEventListener("keydown", onZoomKey, { capture: true });
 
   setLod(HOME_LOD, true);
 
@@ -258,9 +272,10 @@ export function createUniverse(host: HTMLElement): Universe {
     dispose: () => {
       running = false;
       window.removeEventListener("resize", stage.resize);
-      host.removeEventListener("wheel", onWheel);
-      host.removeEventListener("gesturestart", onGestureStart);
-      host.removeEventListener("gesturechange", onGestureChange);
+      window.removeEventListener("wheel", onWheel, { capture: true });
+      window.removeEventListener("gesturestart", onGestureStart, { capture: true });
+      window.removeEventListener("gesturechange", onGestureChange, { capture: true });
+      window.removeEventListener("keydown", onZoomKey, { capture: true });
       renderer.dispose();
       renderer.domElement.remove();
       labels.domElement.remove();

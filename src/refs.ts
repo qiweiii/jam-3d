@@ -66,6 +66,9 @@ export const TERMS = {
         text: "Who stores it: three guarantors on that core this slot encode the blob and send one chunk to each validator. Each validator, as assurer, keeps their chunk. Rebuild needs on the order of 342 pieces (C = 341, V = 1023 in these drafts).",
       },
       {
+        text: "Aggregate availability ≈ 682 MB/s; ≈ 2 PB retained network-wide.",
+      },
+      {
         text: "If a supermajority assures on-chain, the report is available and may accumulate. Otherwise it times out.",
       },
       {
@@ -74,6 +77,10 @@ export const TERMS = {
       },
       {
         text: "Gray Paper 0.8.0 · §14 D³L",
+        href: gp(),
+      },
+      {
+        text: "Gray Paper 0.8.0 · §20 performance",
         href: gp(),
       },
       {
@@ -91,10 +98,110 @@ export const TERMS = {
     width: "17rem",
     bullets: [
       {
-        text: "On-chain lookup in the service account (δ), for code and in-core fetch.",
+        text: "A preimage is the original blob behind a hash H(blob).",
+      },
+      {
+        text: "Services keep blobs in their service account δ and fetch them by hash, on-chain.",
       },
       {
         text: "Gray Paper 0.8.0 · §9 preimage lookups",
+        href: gp(),
+      },
+    ],
+  },
+  upload: {
+    side: "bottom",
+    width: "17rem",
+    bullets: [
+      {
+        text: "Preimages enter on-chain through the preimages extrinsic E_P, addressed to a service.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §4.1 the block",
+        href: gp(),
+      },
+    ],
+  },
+  store: {
+    side: "bottom",
+    width: "18rem",
+    bullets: [
+      {
+        text: "Held per service on-chain: blobs keyed by their hash, availability tracked since when.",
+      },
+      {
+        text: "Unreferenced blobs may be expunged after D = 19,200 timeslots ≈ 32 hours.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §9 service state",
+        href: gp(),
+      },
+    ],
+  },
+  past: {
+    side: "bottom",
+    width: "16rem",
+    bullets: [
+      {
+        text: "Earlier work built on: imported segments fetched from the D³L, by root and index.",
+      },
+    ],
+  },
+  new: {
+    side: "bottom",
+    width: "16rem",
+    bullets: [
+      {
+        text: "The fresh package's whole bundle — payloads, extrinsics, imports, auth data — is ≤ W_B ≈ 13.8 MB.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §14 work packages and reports",
+        href: gp(),
+      },
+    ],
+  },
+  future: {
+    side: "bottom",
+    width: "16rem",
+    bullets: [
+      {
+        text: "Work out: the work-report, with results capped at W_R ≈ 48 KB per package.",
+      },
+    ],
+  },
+  pvm: {
+    side: "bottom",
+    width: "18rem",
+    bullets: [
+      {
+        text: "In-core PVM: authorize + refine on this core. Not service storage.",
+      },
+      {
+        text: "Virtual hardware: 25–50% of a native core, 2 GB of RAM, 2 MB/s of i/o, 6-second segments.",
+      },
+    ],
+  },
+  refine: {
+    side: "bottom",
+    width: "16rem",
+    bullets: [
+      {
+        text: "In-core: heavy work → a work-report. Does not write the service account.",
+      },
+    ],
+  },
+  stateAccess: {
+    side: "bottom",
+    width: "17rem",
+    bullets: [
+      {
+        text: "Accumulation runs on-chain with access to service state.",
+      },
+      {
+        text: "It can read and update state.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §4.9 in-core and on-chain",
         href: gp(),
       },
     ],
@@ -104,7 +211,7 @@ export const TERMS = {
     width: "28rem",
     bullets: [
       {
-        text: "C = 341 generic slots; a core runs one work-package at a time.",
+        text: "C = 341 cores; a core runs one work-package at a time.",
       },
       {
         text: "Active cores = |κ′|/3, capped at 341 — three guarantors per core covers the validator set exactly.",
@@ -116,6 +223,9 @@ export const TERMS = {
         text: "JAM does not choose its validators — an external staking system updates the key set; active cores follow |κ′|.",
       },
       {
+        text: "A validator is a machine running the protocol; it can hold several hats at once — guarantor, assurer, auditor.",
+      },
+      {
         text: "Guarantor: one of three per core; runs authorization and refine, signs a guarantee over the work-report hash.",
       },
       {
@@ -125,7 +235,7 @@ export const TERMS = {
         text: "Auditor: selected in tranches — a new group every A = 8 seconds — to recheck reported work.",
       },
       {
-        text: "Each core’s three guarantors rotate together to the next core every 10 slots; epoch randomness selects new trios.",
+        text: "Each core’s three guarantors rotate together to the next core every 10 timeslots; epoch randomness selects new trios.",
       },
       {
         text: "Access: each core’s pool α[c] of authorizer hashes gates refine; a used authorizer is removed and the queue ϕ[c] refills it each block.",

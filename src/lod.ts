@@ -9,11 +9,13 @@ export const HOME_LOD: LodId = "machine";
 export const HERO = new Vector3(1.5, 0.35, 6.5);
 /** Kidney local units → world. Large enough that the block is a neighbour, not another planet. */
 export const INNER = 0.12;
-/** This slot, just outside the hero core (refine output). */
-export const NOW_BLOCK = new Vector3(HERO.x + 3.1, HERO.y - 3.2, HERO.z + 0.5);
+/** Local horizontal offset that seats the PVM lobe inside the on-chain river. */
+export const PVM_SHIFT_X = 0.35;
+/** This slot, lower-right of the hero core, where the report enters the vertical chain. */
+export const NOW_BLOCK = new Vector3(HERO.x + 0.62, HERO.y - 0.85, HERO.z + 0.12);
 
-/** Spacing between chain blocks; the STF stack sits in the gap this leaves. */
-export const BLOCK_GAP = 1.9;
+/** Compact spacing keeps the descending chain inside the on-chain river. */
+export const BLOCK_GAP = 0.32;
 
 export function nest(local: Vector3): Vector3 {
   return new Vector3(
@@ -22,6 +24,15 @@ export function nest(local: Vector3): Vector3 {
     HERO.z + local.z * INNER,
   );
 }
+
+const CORE_POSITION = nest(new Vector3(-2.4, 1.5, 15.2));
+const CORE_TARGET = nest(new Vector3(2.1, 0.2, 0));
+const CORE_VIEW_OFFSET = CORE_POSITION.clone().sub(CORE_TARGET);
+const PACKAGE_TARGET = new Vector3(HERO.x + 0.35, HERO.y - 0.7, HERO.z + 0.1);
+const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET, 2.05);
+const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
+const STF_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
+const STF_POSITION = STF_TARGET.clone().add(new Vector3(1, 0.6, 1.2).setLength(0.8));
 
 export type LodFrame = {
   id: LodId;
@@ -44,34 +55,34 @@ export const frames: LodFrame[] = [
   {
     id: "core",
     label: "core",
-    position: nest(new Vector3(-1.2, 1.8, 13.5)),
-    target: nest(new Vector3(0.6, 0.15, 0)),
+    position: CORE_POSITION.clone(),
+    target: CORE_TARGET.clone(),
     minDist: 0.9,
     maxDist: 7,
   },
   {
     id: "package",
     label: "package",
-    position: new Vector3(HERO.x - 5.2, HERO.y + 2.6, HERO.z + 7.4),
-    target: new Vector3(HERO.x + 1.1, HERO.y - 1.0, HERO.z + 0.2),
-    minDist: 2.2,
-    maxDist: 16,
+    position: PACKAGE_POSITION.clone(),
+    target: PACKAGE_TARGET.clone(),
+    minDist: 1,
+    maxDist: 8,
   },
   {
     id: "block",
     label: "block",
-    position: new Vector3(NOW_BLOCK.x + 4.4, NOW_BLOCK.y + 2.8, NOW_BLOCK.z + 5.6),
-    target: NOW_BLOCK.clone(),
-    minDist: 2.4,
-    maxDist: 16,
+    position: BLOCK_TARGET.clone().add(CORE_VIEW_OFFSET),
+    target: BLOCK_TARGET.clone(),
+    minDist: 0.5,
+    maxDist: 4,
   },
   {
     id: "stf",
     label: "stf",
-    position: new Vector3(NOW_BLOCK.x + 2.4, NOW_BLOCK.y + 1.6, NOW_BLOCK.z - BLOCK_GAP / 2 + 0.9),
-    target: new Vector3(NOW_BLOCK.x, NOW_BLOCK.y, NOW_BLOCK.z - BLOCK_GAP / 2),
-    minDist: 1,
-    maxDist: 7,
+    position: STF_POSITION.clone(),
+    target: STF_TARGET.clone(),
+    minDist: 0.18,
+    maxDist: 2,
   },
 ];
 

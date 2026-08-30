@@ -24,8 +24,8 @@ export function buildChain(): Chain {
   const blockCount = 10;
   const nowBlock = NOW_BLOCK.clone();
   const blockGap = BLOCK_GAP;
-  const oldestZ = nowBlock.z - (blockCount - 1) * blockGap;
-  const blockGeom = new BoxGeometry(0.95, 0.22, 0.95);
+  const oldestY = nowBlock.y - (blockCount - 1) * blockGap;
+  const blockGeom = new BoxGeometry(0.15, 0.15, 0.15);
   const blocks: Mesh[] = [];
   for (let i = 0; i < blockCount; i++) {
     const m = new Mesh(
@@ -40,7 +40,7 @@ export function buildChain(): Chain {
         opacity: 1 - i * 0.08,
       }),
     );
-    m.position.set(nowBlock.x, nowBlock.y, nowBlock.z - i * blockGap);
+    m.position.set(nowBlock.x, nowBlock.y - i * blockGap, nowBlock.z);
     m.scale.setScalar(1 - i * 0.04);
     group.add(m);
     blocks.push(m);
@@ -60,10 +60,10 @@ export function buildChain(): Chain {
       new TubeGeometry(
         makeCurve([
           [nowBlock.x, nowBlock.y, nowBlock.z],
-          [nowBlock.x, nowBlock.y, oldestZ],
+          [nowBlock.x, oldestY, nowBlock.z],
         ]),
-        8,
-        0.03,
+        32,
+        0.006,
         6,
         false,
       ),
@@ -72,10 +72,9 @@ export function buildChain(): Chain {
   );
 
   const stf = new Group();
-  stf.position.set(nowBlock.x, nowBlock.y, nowBlock.z - blockGap / 2);
-  stf.rotation.x = Math.PI / 2;
-  stf.scale.setScalar(0.8);
-  const plateGeom = new BoxGeometry(1.2, 0.11, 0.72);
+  stf.position.set(nowBlock.x, nowBlock.y - blockGap / 2, nowBlock.z);
+  stf.scale.setScalar(0.38);
+  const plateGeom = new BoxGeometry(0.32, 0.04, 0.22);
   for (let i = 0; i < 5; i++) {
     const plate = new Mesh(
       plateGeom,
@@ -87,19 +86,16 @@ export function buildChain(): Chain {
         metalness: 0.22,
       }),
     );
-    plate.position.y = (i - 2) * 0.21;
+    plate.position.y = (i - 2) * 0.06;
     stf.add(plate);
   }
   group.add(stf);
 
-  const accTag = tag("accumulate", "on-chain", "#f0a03c", "block");
-  if (thisBlock) accTag.position.copy(thisBlock.position).add(new Vector3(0, 0.7, 0));
-  group.add(accTag);
   const rootTag = tag("state root", "header commit", "#f4f1ea", "block");
-  if (thisBlock) rootTag.position.copy(thisBlock.position).add(new Vector3(0, -0.55, 0));
+  if (thisBlock) rootTag.position.copy(thisBlock.position).add(new Vector3(0.3, 0, 0));
   group.add(rootTag);
   const stfTag = tag("STF", "σ → σ′", "#9ec8dc", "stf");
-  stfTag.position.set(0, 0, -1);
+  stfTag.position.set(0.55, 0, 0);
   stf.add(stfTag);
 
   return { group, stf };
