@@ -31,8 +31,9 @@ const CORE_VIEW_OFFSET = CORE_POSITION.clone().sub(CORE_TARGET);
 const PACKAGE_TARGET = new Vector3(HERO.x + 0.35, HERO.y - 0.7, HERO.z + 0.1);
 const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET, 2.05);
 const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
+const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 1.08));
 const STF_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const STF_POSITION = STF_TARGET.clone().add(new Vector3(1, 0.6, 1.2).setLength(0.8));
+const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.34));
 
 export type LodFrame = {
   id: LodId;
@@ -71,18 +72,18 @@ export const frames: LodFrame[] = [
   {
     id: "block",
     label: "block",
-    position: BLOCK_TARGET.clone().add(CORE_VIEW_OFFSET),
+    position: BLOCK_POSITION.clone(),
     target: BLOCK_TARGET.clone(),
-    minDist: 0.5,
-    maxDist: 4,
+    minDist: 0.3,
+    maxDist: 2.5,
   },
   {
     id: "stf",
     label: "stf",
     position: STF_POSITION.clone(),
     target: STF_TARGET.clone(),
-    minDist: 0.18,
-    maxDist: 2,
+    minDist: 0.07,
+    maxDist: 0.8,
   },
 ];
 

@@ -80,6 +80,7 @@ export function createUniverse(host: HTMLElement): Universe {
   let outerFrom = 1;
   let outerTo = 1;
   let outer = 1;
+  let tagsDirty = true;
 
   const outerAmount = (id: LodId): number => {
     if (id === "machine") return 1;
@@ -142,9 +143,12 @@ export function createUniverse(host: HTMLElement): Universe {
     anatomy.group.visible = next !== "machine";
     chain.group.visible = next === "package" || next === "block" || next === "stf";
     chain.stf.visible = next === "stf";
+    chain.currentBlock.visible = next !== "block";
+    chain.blockDetail.visible = next === "block";
     journey.packet.visible = next === "package";
     mast.classList.toggle("is-hidden", next !== "machine");
     setTagLod(next);
+    tagsDirty = true;
     host.dataset.lod = next;
     for (const [id, b] of lodBtns) b.setAttribute("aria-current", id === next ? "true" : "false");
   };
@@ -264,6 +268,10 @@ export function createUniverse(host: HTMLElement): Universe {
     if (controls.enabled) controls.update();
     renderer.render(scene, camera);
     labels.render(scene, camera);
+    if (tagsDirty) {
+      setTagLod(lod);
+      tagsDirty = false;
+    }
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
