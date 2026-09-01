@@ -206,6 +206,45 @@ export const TERMS = {
       },
     ],
   },
+  state: {
+    side: "left",
+    width: "18rem",
+    bullets: [
+      {
+        text: "Everything JAM tracks at one block: services δ, validators κ, Safrole γ, per-core reports ρ, recent history β, slot τ.",
+      },
+      {
+        text: "17 segments total; each STF stage writes its own segment.",
+      },
+      {
+        text: "Blocks commit only its 32-octet root H_R = M_σ(σ).",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §4.2 the state",
+        href: gp(),
+      },
+      {
+        text: "Gray Paper 0.8.0 · §5 the header",
+        href: gp(),
+      },
+    ],
+  },
+  statePost: {
+    side: "left",
+    width: "17rem",
+    bullets: [
+      {
+        text: "σ′ = Υ(σ, B): the state after this block's transition.",
+      },
+      {
+        text: "The next block's header commits root(σ′), so Merklization pipelines into block production.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §4 overview",
+        href: gp(),
+      },
+    ],
+  },
   blockHeader: {
     side: "right",
     width: "18rem",

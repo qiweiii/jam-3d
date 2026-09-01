@@ -263,6 +263,7 @@ export function createUniverse(host: HTMLElement): Universe {
       anatomy.outline.scale.copy(anatomy.body.scale).multiplyScalar(1.045);
       anatomy.store.rotation.y += dt * 0.35;
       journey.update(t);
+      chain.stfPulse(t);
     }
     for (const s of anatomy.streams) tickStream(s, t, tmp);
     if (controls.enabled) controls.update();

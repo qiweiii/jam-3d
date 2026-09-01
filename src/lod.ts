@@ -15,7 +15,7 @@ export const PVM_SHIFT_X = 0.35;
 export const NOW_BLOCK = new Vector3(HERO.x + 0.62, HERO.y - 0.85, HERO.z + 0.12);
 
 /** Compact spacing keeps the descending chain inside the on-chain river. */
-export const BLOCK_GAP = 0.32;
+export const BLOCK_GAP = 0.26;
 
 export function nest(local: Vector3): Vector3 {
   return new Vector3(
@@ -31,9 +31,9 @@ const CORE_VIEW_OFFSET = CORE_POSITION.clone().sub(CORE_TARGET);
 const PACKAGE_TARGET = new Vector3(HERO.x + 0.35, HERO.y - 0.7, HERO.z + 0.1);
 const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET, 2.05);
 const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 1.08));
+const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 0.6));
 const STF_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.34));
+const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.28));
 
 export type LodFrame = {
   id: LodId;
