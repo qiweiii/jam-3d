@@ -45,7 +45,7 @@ export function buildJourney(): Journey {
 
   const update = (t: number) => {
     // getPointAt is arc-length based: approach and post-core travel at the same speed.
-    const u = (t * 0.2) % 1;
+    const u = (t * 0.28) % 1;
     wpPath.getPointAt(u, wpPacket.position);
     const report = wpPacket.position.x > HERO.x + (1.45 + PVM_SHIFT_X) * INNER;
     if (report !== wpIsReport) {

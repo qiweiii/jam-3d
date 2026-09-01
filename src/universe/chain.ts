@@ -19,8 +19,6 @@ export type Chain = {
   blockDetail: Group;
   stf: Group;
   stateRail: Group;
-  /** Drive the stage light pulse; `t` is seconds. */
-  stfPulse: (t: number) => void;
 };
 
 const BLOCK_EXTRINSICS = [
@@ -192,7 +190,6 @@ export function buildChain(): Chain {
   stf.scale.setScalar(0.38);
   const plateGeom = new BoxGeometry(0.22, 0.018, 0.13);
   const stageGap = 0.03;
-  const stageMaterials: MeshStandardMaterial[] = [];
   for (const [i, stage] of STF_STAGES.entries()) {
     const y = ((STF_STAGES.length - 1) / 2 - i) * stageGap;
     const material = new MeshStandardMaterial({
@@ -202,7 +199,6 @@ export function buildChain(): Chain {
       roughness: 0.4,
       metalness: 0.24,
     });
-    stageMaterials.push(material);
     const plate = new Mesh(plateGeom, material);
     plate.position.y = y;
     stf.add(plate);
@@ -212,14 +208,6 @@ export function buildChain(): Chain {
     stf.add(stageTag);
     wrapTerm(stageTag.element.querySelector(".tag-title") ?? stageTag.element, stage.title, stage.term);
   }
-  const stfPulse = (t: number) => {
-    const p = (t % 2.4) / 2.4;
-    for (const [i, material] of stageMaterials.entries()) {
-      const u = (STF_STAGES.length - 1 - i) / (STF_STAGES.length - 1);
-      const distance = (u - p) / 0.16;
-      material.emissiveIntensity = 0.48 + 0.55 * Math.exp(-distance * distance);
-    }
-  };
   group.add(stf);
 
   const stfTag = tag("STF", "σ → σ′", "#f4f1ea", "stf");
@@ -237,5 +225,5 @@ export function buildChain(): Chain {
   group.add(statePostTag);
   wrapTerm(statePostTag.element.querySelector(".tag-title") ?? statePostTag.element, "state σ′", TERMS.statePost);
 
-  return { group, currentBlock, blockDetail, stf, stateRail, stfPulse };
+  return { group, currentBlock, blockDetail, stf, stateRail };
 }

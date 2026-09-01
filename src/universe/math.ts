@@ -1,7 +1,9 @@
 import { Vector3 } from "three";
 
-export function easeQuintic(t: number): number {
-  return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
+
+/** Fast start, gentle landing — for camera flights that should feel immediate. */
+export function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3);
 }
 
 export function slerpDir(a: Vector3, b: Vector3, t: number, out: Vector3): Vector3 {

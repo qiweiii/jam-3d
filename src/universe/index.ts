@@ -6,7 +6,7 @@ import { buildAnatomy } from "./anatomy";
 import { buildChain } from "./chain";
 import { buildJourney } from "./journey";
 import { buildMachine } from "./machine";
-import { easeQuintic, slerpDir } from "./math";
+import { easeOutCubic, slerpDir } from "./math";
 import { createStage } from "./stage";
 import { tickStream } from "./streams";
 
@@ -94,12 +94,16 @@ export function createUniverse(host: HTMLElement): Universe {
     machine.hullMat.opacity = 0.05 * t;
     machine.hullEdgeMat.opacity = 0.55 * t;
     machine.heroMat.opacity = 0.1 + 0.32 * t;
+    for (const entry of machine.architectureMaterials) {
+      entry.material.opacity = entry.opacity * t;
+    }
     const show = t > 0.03;
     machine.ghosts.visible = show;
     machine.hull.visible = show;
     machine.hullEdges.visible = show;
     machine.heroShell.visible = true;
     machine.wallpaper.visible = t > 0.18;
+    machine.architecture.visible = t > 0.18;
   };
 
   const setTagLod = (id: LodId) => {
@@ -121,7 +125,7 @@ export function createUniverse(host: HTMLElement): Universe {
     toTarget.copy(frame.target);
     const d0 = Math.max(0.08, fromPos.distanceTo(fromTarget));
     const d1 = Math.max(0.08, toPos.distanceTo(toTarget));
-    flyDur = Math.min(2.4, Math.max(0.9, 0.75 + Math.abs(Math.log(d1 / d0)) * 0.24));
+    flyDur = Math.min(1.5, Math.max(0.55, 0.45 + Math.abs(Math.log(d1 / d0)) * 0.18));
     const go = !(instant || reduce);
     fly = go ? 0 : 1;
     outerFrom = outer;
@@ -235,7 +239,7 @@ export function createUniverse(host: HTMLElement): Universe {
     const t = now * 0.001;
     if (fly < 1) {
       fly = Math.min(1, fly + dt / flyDur);
-      const e = easeQuintic(fly);
+      const e = easeOutCubic(fly);
       controls.target.lerpVectors(fromTarget, toTarget, e);
       fromDir.subVectors(fromPos, fromTarget);
       toDir.subVectors(toPos, toTarget);
@@ -263,7 +267,6 @@ export function createUniverse(host: HTMLElement): Universe {
       anatomy.outline.scale.copy(anatomy.body.scale).multiplyScalar(1.045);
       anatomy.store.rotation.y += dt * 0.35;
       journey.update(t);
-      chain.stfPulse(t);
     }
     for (const s of anatomy.streams) tickStream(s, t, tmp);
     if (controls.enabled) controls.update();

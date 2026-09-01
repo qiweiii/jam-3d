@@ -31,6 +31,11 @@ export type Machine = {
   hullEdgeMat: LineBasicMaterial;
   heroMat: MeshStandardMaterial;
   heroShell: Mesh;
+  architecture: Group;
+  architectureMaterials: Array<{
+    material: MeshBasicMaterial | MeshStandardMaterial;
+    opacity: number;
+  }>;
 };
 
 /** The whole JAM at machine scale: hull, ghost cores, hero shell, wallpaper rings. */
@@ -112,7 +117,7 @@ export function buildMachine(): Machine {
   for (let i = 0; i < coreCount; i++) {
     dummy.position.set(
       hull.position.x + (Math.random() - 0.5) * (hullW - 5),
-      hull.position.y + (Math.random() - 0.5) * (hullH - 5),
+      hull.position.y - 3.4 + (Math.random() - 0.5) * 8,
       hull.position.z + (Math.random() - 0.5) * (hullD - 5),
     );
     pushOut(HERO, 3.6);
@@ -124,15 +129,85 @@ export function buildMachine(): Machine {
   }
   group.add(ghosts);
 
+  const architecture = new Group();
+  const architectureMaterials: Array<{
+    material: MeshBasicMaterial | MeshStandardMaterial;
+    opacity: number;
+  }> = [];
+  const rememberOpacity = <T extends MeshBasicMaterial | MeshStandardMaterial>(material: T, opacity: number) => {
+    architectureMaterials.push({ material, opacity });
+    return material;
+  };
+
+  const userlandMat = rememberOpacity(
+    new MeshBasicMaterial({
+      color: 0x4a3540,
+      transparent: true,
+      opacity: 0.11,
+      depthWrite: false,
+    }),
+    0.11,
+  );
+  const userland = new Mesh(new BoxGeometry(hullW, 5.4, hullD), userlandMat);
+  userland.position.set(hull.position.x, hull.position.y + 5.3, hull.position.z);
+  architecture.add(userland);
+  const hardwareMat = rememberOpacity(
+    new MeshBasicMaterial({
+      color: 0x1c3242,
+      transparent: true,
+      opacity: 0.13,
+      depthWrite: false,
+    }),
+    0.13,
+  );
+  const hardware = new Mesh(new BoxGeometry(hullW, 10.6, hullD), hardwareMat);
+  hardware.position.set(hull.position.x, hull.position.y - 2.7, hull.position.z);
+  architecture.add(hardware);
+  const serviceGeom = new BoxGeometry(4, 0.78, 3);
+  const services = [
+    { title: "service A", x: hull.position.x - 6, color: 0xe45a88 },
+    { title: "CoreChains", x: hull.position.x, color: 0xd6b45f },
+    { title: "service B", x: hull.position.x + 6, color: 0x69c99b },
+  ] as const;
+  for (const service of services) {
+    const material = rememberOpacity(
+      new MeshStandardMaterial({
+        color: 0x17151b,
+        emissive: service.color,
+        emissiveIntensity: 0.34,
+        roughness: 0.36,
+        metalness: 0.24,
+        transparent: true,
+        opacity: 0.88,
+      }),
+      0.88,
+    );
+    const cartridge = new Mesh(serviceGeom, material);
+    cartridge.position.set(service.x, hull.position.y + 5.5, hull.position.z);
+    architecture.add(cartridge);
+    const serviceTag = tag(service.title, "", `#${service.color.toString(16).padStart(6, "0")}`, "machine");
+    serviceTag.position.set(service.x, hull.position.y + 6.2, hull.position.z);
+    architecture.add(serviceTag);
+  }
+
+  const userlandTag = tag("userland", "", "#e8d9c5", "machine");
+  userlandTag.position.set(hull.position.x + 10.2, hull.position.y + 5.5, hull.position.z);
+  architecture.add(userlandTag);
+
+  const hardwareTag = tag("hardware", "", "#8eb6c9", "machine");
+  hardwareTag.position.set(hull.position.x + 10.2, hull.position.y - 2.3, hull.position.z);
+  architecture.add(hardwareTag);
+
+  group.add(architecture);
+
   const fieldTag = tag("cores", "341", "#c8c4bc", "machine");
-  fieldTag.position.set(hull.position.x + 6.5, hull.position.y + 1.1, hull.position.z);
+  fieldTag.position.set(hull.position.x + 6.5, hull.position.y + 0.3, hull.position.z);
   group.add(fieldTag);
   const daTag = tag("DA", "data lake", "#b8c0c8", "machine");
-  daTag.position.set(hull.position.x - 5.5, hull.position.y + 2.4, hull.position.z);
+  daTag.position.set(hull.position.x - 6.5, hull.position.y - 3.3, hull.position.z);
   group.add(daTag);
   wrapTerm(daTag.element.querySelector(".tag-title") ?? daTag.element, "DA", TERMS.da);
   wrapTerm(fieldTag.element.querySelector(".tag-title") ?? fieldTag.element, "cores", TERMS.cores);
-
   return {
     group,
     wallpaper,
@@ -144,5 +219,7 @@ export function buildMachine(): Machine {
     hullEdgeMat,
     heroMat,
     heroShell,
+    architecture,
+    architectureMaterials,
   };
 }
