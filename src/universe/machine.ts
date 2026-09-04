@@ -143,25 +143,37 @@ export function buildMachine(): Machine {
     new MeshBasicMaterial({
       color: 0x4a3540,
       transparent: true,
-      opacity: 0.11,
+      opacity: 0.15,
       depthWrite: false,
     }),
-    0.11,
+    0.15,
   );
-  const userland = new Mesh(new BoxGeometry(hullW, 5.4, hullD), userlandMat);
-  userland.position.set(hull.position.x, hull.position.y + 5.3, hull.position.z);
+  const userland = new Mesh(new BoxGeometry(hullW, 5.0, hullD), userlandMat);
+  userland.position.set(hull.position.x, hull.position.y + 5.5, hull.position.z);
   architecture.add(userland);
+  const kernelMat = rememberOpacity(
+    new MeshBasicMaterial({
+      color: 0x2c2a54,
+      transparent: true,
+      opacity: 0.17,
+      depthWrite: false,
+    }),
+    0.17,
+  );
+  const kernel = new Mesh(new BoxGeometry(hullW, 2.1, hullD), kernelMat);
+  kernel.position.set(hull.position.x, hull.position.y + 1.95, hull.position.z);
+  architecture.add(kernel);
   const hardwareMat = rememberOpacity(
     new MeshBasicMaterial({
       color: 0x1c3242,
       transparent: true,
-      opacity: 0.13,
+      opacity: 0.16,
       depthWrite: false,
     }),
-    0.13,
+    0.16,
   );
-  const hardware = new Mesh(new BoxGeometry(hullW, 10.6, hullD), hardwareMat);
-  hardware.position.set(hull.position.x, hull.position.y - 2.7, hull.position.z);
+  const hardware = new Mesh(new BoxGeometry(hullW, 8.9, hullD), hardwareMat);
+  hardware.position.set(hull.position.x, hull.position.y - 3.55, hull.position.z);
   architecture.add(hardware);
   const serviceGeom = new BoxGeometry(4, 0.78, 3);
   const services = [
@@ -198,13 +210,21 @@ export function buildMachine(): Machine {
   hardwareTag.position.set(hull.position.x + 10.2, hull.position.y - 2.3, hull.position.z);
   architecture.add(hardwareTag);
 
+  const kernelTag = tag("kernel", "", "#a99cff", "machine");
+  kernelTag.position.set(hull.position.x + 10.2, hull.position.y + 1.95, hull.position.z);
+  architecture.add(kernelTag);
+
+  const protocolTag = tag("JAM protocol", "", "#a99cff", "machine");
+  protocolTag.position.set(hull.position.x, hull.position.y + 1.95, hull.position.z);
+  architecture.add(protocolTag);
+
   group.add(architecture);
 
   const fieldTag = tag("cores", "341", "#c8c4bc", "machine");
-  fieldTag.position.set(hull.position.x + 6.5, hull.position.y + 0.3, hull.position.z);
+  fieldTag.position.set(hull.position.x + 6.5, hull.position.y - 0.7, hull.position.z);
   group.add(fieldTag);
   const daTag = tag("DA", "data lake", "#b8c0c8", "machine");
-  daTag.position.set(hull.position.x - 6.5, hull.position.y - 3.3, hull.position.z);
+  daTag.position.set(hull.position.x - 6.5, hull.position.y - 1.5, hull.position.z);
   group.add(daTag);
   wrapTerm(daTag.element.querySelector(".tag-title") ?? daTag.element, "DA", TERMS.da);
   wrapTerm(fieldTag.element.querySelector(".tag-title") ?? fieldTag.element, "cores", TERMS.cores);
