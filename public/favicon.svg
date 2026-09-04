@@ -1,18 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <defs>
-    <clipPath id="box">
-      <rect x="2" y="2" width="60" height="60" rx="14" />
-    </clipPath>
-  </defs>
-  <g clip-path="url(#box)">
-    <rect x="2" y="2" width="60" height="60" fill="#0b0d11" />
-    <rect x="2" y="2" width="60" height="26" fill="#3a2c36" />
-    <rect x="2" y="28" width="60" height="34" fill="#14303f" />
-    <circle cx="16" cy="47" r="3" fill="#5ec8e8" opacity="0.8" />
-    <circle cx="32" cy="50" r="3" fill="#5ec8e8" opacity="0.55" />
-    <circle cx="48" cy="47" r="3" fill="#5ec8e8" opacity="0.8" />
-    <circle cx="32" cy="27" r="10" fill="#f07828" opacity="0.3" />
-    <circle cx="32" cy="27" r="6" fill="#f07828" />
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0b0d11" stroke="#f4f1ea" stroke-width="3" />
+  <g fill="none" stroke="#f4f1ea" stroke-width="5.5" stroke-linecap="round">
+    <path d="M13,20 V39 Q13,44.5 9,44.5" />
+    <circle cx="26.5" cy="36" r="6" />
+    <path d="M32.5,29 V44.5" />
+    <path d="M40,44.5 V30.5 Q40,26.5 43.5,26.5 Q47,26.5 47,30.5 V44.5 M47,31 Q47,26.5 50.5,26.5 Q54,26.5 54,30.5 V44.5" />
   </g>
-  <rect x="2" y="2" width="60" height="60" rx="14" fill="none" stroke="#f4f1ea" stroke-width="3" />
+  <circle cx="13" cy="11" r="2.8" fill="#f07828" />
 </svg>
