@@ -9,7 +9,7 @@ export const KIAN_JAM = "https://blog.kianenigma.com/posts/tech/demystifying-jam
 /**
  * Fluffy Labs reader, draft 0.8.0.
  * Pass `selection` copied from the reader hash after highlighting text
- * (`<start><end>`, 12 hex chars). Do not invent page indexes — a zero-width
+ * (`<start><end>`, 12 hex chars). Do not invent page indexes; a zero-width
  * caret does not restore a selection.
  * `#/07f041d/<selection>?v=0.8.0` or `#/07f041d?v=0.8.0`.
  */
@@ -57,19 +57,22 @@ export const TERMS = {
     width: "24rem",
     bullets: [
       {
-        text: "Distributed data lake (D³L): the big blobs behind a work-report, as erasure-coded chunks keyed by the report’s erasure-root and segment-root.",
+        text: "Two stores: the short-term Audit DA holds the erasure-coded work bundle; the long-term D³L holds exported segments with their proofs.",
       },
       {
-        text: "What it holds: the work-package bundle (package, extrinsics, imported segments, proofs) and exported segments later work can import.",
+        text: "Short-term: the audit bundle (package, extrinsics, imported segments, proofs) is kept only until the block making its report available is finalized.",
       },
       {
-        text: "Who stores it: three guarantors on that core this slot encode the blob and send one chunk to each validator. Each validator, as assurer, keeps their chunk. Rebuild needs on the order of 342 pieces (C = 341, V = 1023 in these drafts).",
+        text: "Long-term: the D³L keeps exported segments at least 28 days = 672 epochs, ready for future work-packages to import in refine.",
       },
       {
-        text: "Aggregate availability ≈ 682 MB/s; ≈ 2 PB retained network-wide.",
+        text: "Guarantors erasure-code both sets and give one chunk to each validator; any 342 of the 1023 pieces rebuild the data.",
       },
       {
-        text: "If a supermajority assures on-chain, the report is available and may accumulate. Otherwise it times out.",
+        text: "Aggregate availability ≈ 682 MB/s; ≈ 2 PB retained network-wide, at most ≈ 6 TB per node.",
+      },
+      {
+        text: "A greater-than-two-thirds majority of assurance bits makes the report available to accumulate; without it the assignment is dropped after U = 5 slots.",
       },
       {
         text: "Gray Paper 0.8.0 · §11 reporting and assurance",
@@ -152,7 +155,7 @@ export const TERMS = {
     width: "16rem",
     bullets: [
       {
-        text: "The fresh package's whole bundle — payloads, extrinsics, imports, auth data — is ≤ W_B ≈ 13.8 MB.",
+        text: "The fresh package's whole bundle fits within W_B ≈ 13.8 MB: payloads, extrinsics, imports, auth data.",
       },
       {
         text: "Gray Paper 0.8.0 · §14 work packages and reports",
@@ -496,16 +499,16 @@ export const TERMS = {
         text: "C = 341 cores; a core runs one work-package at a time.",
       },
       {
-        text: "Active cores = |κ′|/3, capped at 341 — three guarantors per core covers the validator set exactly.",
+        text: "Active cores = |κ′|/3, capped at 341; three guarantors per core covers the validator set exactly.",
       },
       {
         text: "Cores are numbered 0–340; work may only be reported on the first |κ′|/3.",
       },
       {
-        text: "JAM does not choose its validators — an external staking system updates the key set; active cores follow |κ′|.",
+        text: "JAM does not choose its validators: an external staking system updates the key set; active cores follow |κ′|.",
       },
       {
-        text: "A validator is a machine running the protocol; it can hold several hats at once — guarantor, assurer, auditor.",
+        text: "A validator is a machine running the protocol; it can hold several hats at once: guarantor, assurer, auditor.",
       },
       {
         text: "Guarantor: one of three per core; runs authorization and refine, signs a guarantee over the work-report hash.",
@@ -514,7 +517,7 @@ export const TERMS = {
         text: "Assurer: every validator stores one erasure chunk per report and files an E_A bitfield of the cores’ data it holds.",
       },
       {
-        text: "Auditor: selected in tranches — a new group every A = 8 seconds — to recheck reported work.",
+        text: "Auditor: selected in tranches, a new group every A = 8 seconds, to recheck reported work.",
       },
       {
         text: "Each core’s three guarantors rotate together to the next core every 10 timeslots; epoch randomness selects new trios.",
@@ -527,15 +530,7 @@ export const TERMS = {
         href: gp(),
       },
       {
-        text: "Gray Paper 0.8.0 · §8 authorization",
-        href: gp(),
-      },
-      {
         text: "Gray Paper 0.8.0 · §11.3 guarantor assignments",
-        href: gp(),
-      },
-      {
-        text: "Gray Paper 0.8.0 · §17 auditing",
         href: gp(),
       },
     ],
