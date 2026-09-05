@@ -140,7 +140,7 @@ export function buildChain(): Chain {
   group.add(blockDetail);
 
   const colorCss = (color: number) => `#${color.toString(16).padStart(6, "0")}`;
-  const headerTag = tag("header · H", "", "#e8b35d", ["block", "stf"]);
+  const headerTag = tag("Header · H", "", "#e8b35d", ["block", "stf"]);
   headerTag.position.set(blockX - 0.09, nowBlock.y + headerY, nowBlock.z);
   group.add(headerTag);
   wrapTerm(headerTag.element.querySelector(".tag-title") ?? headerTag.element, "header", TERMS.blockHeader);
@@ -199,22 +199,22 @@ export function buildChain(): Chain {
   stf.add(stfTag);
   wrapTerm(stfTag.element.querySelector(".tag-title") ?? stfTag.element, "STF", TERMS.stf);
 
-  const stateTag = tag("state σ", "prior", "#5ec8e8", "block");
+  const stateTag = tag("State σ", "Prior", "#5ec8e8", "block");
   stateTag.position.set(stateX + 0.07, nowBlock.y - 0.19, nowBlock.z);
   group.add(stateTag);
   wrapTerm(stateTag.element.querySelector(".tag-title") ?? stateTag.element, "state σ", TERMS.state);
 
-  const statePostTag = tag("state σ′", "posterior", "#7fe0ff", "block");
+  const statePostTag = tag("State σ′", "Posterior", "#7fe0ff", "block");
   statePostTag.position.set(stateX + 0.07, nowBlock.y + 0.075, nowBlock.z);
   group.add(statePostTag);
   wrapTerm(statePostTag.element.querySelector(".tag-title") ?? statePostTag.element, "state σ′", TERMS.statePost);
 
-  const stfStateTag = tag("state σ", "prior", "#5ec8e8", "stf");
+  const stfStateTag = tag("State σ", "Prior", "#5ec8e8", "stf");
   stfStateTag.position.set(stateX + 0.07, nowBlock.y - 0.26, nowBlock.z);
   group.add(stfStateTag);
   wrapTerm(stfStateTag.element.querySelector(".tag-title") ?? stfStateTag.element, "state σ", TERMS.state);
 
-  const stfStatePostTag = tag("state σ′", "posterior", "#7fe0ff", "stf");
+  const stfStatePostTag = tag("State σ′", "Posterior", "#7fe0ff", "stf");
   stfStatePostTag.position.set(stateX + 0.07, nowBlock.y, nowBlock.z);
   group.add(stfStatePostTag);
   wrapTerm(stfStatePostTag.element.querySelector(".tag-title") ?? stfStatePostTag.element, "state σ′", TERMS.statePost);

@@ -177,9 +177,9 @@ export function buildMachine(): Machine {
   architecture.add(hardware);
   const serviceGeom = new BoxGeometry(4, 0.78, 3);
   const services = [
-    { title: "service A", x: hull.position.x - 6, color: 0xe45a88 },
+    { title: "Service A", x: hull.position.x - 6, color: 0xe45a88 },
     { title: "CoreChains", x: hull.position.x, color: 0xd6b45f },
-    { title: "service B", x: hull.position.x + 6, color: 0x69c99b },
+    { title: "Service B", x: hull.position.x + 6, color: 0x69c99b },
   ] as const;
   for (const service of services) {
     const material = rememberOpacity(
@@ -202,15 +202,15 @@ export function buildMachine(): Machine {
     architecture.add(serviceTag);
   }
 
-  const userlandTag = tag("userland", "", "#e8d9c5", "machine");
+  const userlandTag = tag("Userland", "", "#e8d9c5", "machine");
   userlandTag.position.set(hull.position.x + 10.2, hull.position.y + 5.5, hull.position.z);
   architecture.add(userlandTag);
 
-  const hardwareTag = tag("hardware", "", "#8eb6c9", "machine");
+  const hardwareTag = tag("Hardware", "", "#8eb6c9", "machine");
   hardwareTag.position.set(hull.position.x + 10.2, hull.position.y - 2.3, hull.position.z);
   architecture.add(hardwareTag);
 
-  const kernelTag = tag("kernel", "", "#a99cff", "machine");
+  const kernelTag = tag("Kernel", "", "#a99cff", "machine");
   kernelTag.position.set(hull.position.x + 10.2, hull.position.y + 1.95, hull.position.z);
   architecture.add(kernelTag);
 
@@ -220,10 +220,10 @@ export function buildMachine(): Machine {
 
   group.add(architecture);
 
-  const fieldTag = tag("cores", "341", "#c8c4bc", "machine");
+  const fieldTag = tag("Cores", "341", "#c8c4bc", "machine");
   fieldTag.position.set(hull.position.x + 6.5, hull.position.y - 0.7, hull.position.z);
   group.add(fieldTag);
-  const daTag = tag("DA", "data lake", "#b8c0c8", "machine");
+  const daTag = tag("DA", "Data lake", "#b8c0c8", "machine");
   daTag.position.set(hull.position.x - 6.5, hull.position.y - 1.5, hull.position.z);
   group.add(daTag);
   wrapTerm(daTag.element.querySelector(".tag-title") ?? daTag.element, "DA", TERMS.da);
