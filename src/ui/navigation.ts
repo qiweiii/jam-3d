@@ -11,6 +11,14 @@ export function createNavigation(host: HTMLElement, onSelect: (id: LodId) => voi
   bar.className = "lod";
   bar.setAttribute("aria-label", "scale");
   const buttons = new Map<LodId, HTMLButtonElement>();
+  const why = document.createElement("button");
+  why.type = "button";
+  why.textContent = "why";
+  why.dataset.lod = "why";
+  why.title = "Why JAM exists";
+  why.addEventListener("click", () => onSelect("why"));
+  buttons.set("why", why);
+  bar.append(why);
   for (const id of LODS) {
     const button = document.createElement("button");
     button.type = "button";

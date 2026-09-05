@@ -1,11 +1,9 @@
 import { Vector3 } from "three";
+import { LODS, type LodId } from "./stages";
 import { nest, HERO, NOW_BLOCK, BLOCK_GAP } from "../scene/layout";
 
-export const LODS = ["machine", "core", "package", "block", "stf"] as const;
-export type LodId = (typeof LODS)[number];
-
-export const HOME_LOD: LodId = "machine";
-
+export { HOME_LOD, LODS } from "./stages";
+export type { LodId } from "./stages";
 const CORE_POSITION = nest(new Vector3(-2.4, 1.5, 15.2));
 const CORE_TARGET = nest(new Vector3(2.1, 0.2, 0));
 const CORE_VIEW_OFFSET = CORE_POSITION.clone().sub(CORE_TARGET);
@@ -66,13 +64,23 @@ export const frames: LodFrame[] = [
     minDist: 0.07,
     maxDist: 0.8,
   },
+  {
+    id: "why",
+    label: "why",
+    position: new Vector3(46, 1.18, 4.3),
+    target: new Vector3(46, 0.32, 0),
+    minDist: 1.2,
+    maxDist: 34,
+  },
 ];
 
 export function lodIndex(id: LodId): number {
-  return LODS.indexOf(id);
+  return LODS.indexOf(id as (typeof LODS)[number]);
 }
 
+/** Dolly crossing stays inside the zoom chain; `why` is entered only by its button. */
 export function stepLod(id: LodId, delta: number): LodId {
+  if (!LODS.includes(id as (typeof LODS)[number])) return id;
   const i = Math.max(0, Math.min(LODS.length - 1, lodIndex(id) + delta));
   const next = LODS[i];
   return next ?? id;

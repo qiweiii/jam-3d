@@ -1,7 +1,7 @@
 import { AdditiveBlending, CatmullRomCurve3, Mesh, MeshBasicMaterial, SphereGeometry, Vector3 } from "three";
 import { nest, NOW_BLOCK, PVM_SHIFT_X } from "./layout";
 import { tag } from "./tag";
-import type { JourneyPlayback } from "../experience/playback";
+import type { JourneyStep, PlaybackSnapshot } from "../experience/playback";
 
 const NEXT = 0xf07828;
 const PURPLE = 0x7b6cff;
@@ -17,14 +17,14 @@ const PATH_STEPS = {
 export type Journey = {
   packet: Mesh;
   /** Render the explicit playback state; layout never determines protocol state. */
-  update: (state: ReturnType<JourneyPlayback["snapshot"]>, reduce: boolean) => void;
+  update: (state: PlaybackSnapshot<JourneyStep>, reduce: boolean) => void;
 };
 
 /** One work package riding the core: approach, refine, then report sprinting to the block. */
 export function buildJourney(): Journey {
   const wpMat = new MeshBasicMaterial({ color: NEXT, blending: AdditiveBlending });
   const wpPacket = new Mesh(new SphereGeometry(0.026, 14, 14), wpMat);
-  const wpTag = tag("work package", "", "#f07828", ["package", "block"]);
+  const wpTag = tag("Work package", "", "#f07828", ["package", "block"]);
   let wpIsReport = false;
   wpTag.position.set(0, 0.12, 0);
   wpPacket.add(wpTag);
@@ -64,7 +64,7 @@ export function buildJourney(): Journey {
     if (report !== wpIsReport) {
       wpIsReport = report;
       wpMat.color.set(report ? PURPLE : NEXT);
-      wpTag.element.innerHTML = `<span class="tag-title">${report ? "work report" : "work package"}</span>`;
+      wpTag.element.innerHTML = `<span class="tag-title">${report ? "Work report" : "Work package"}</span>`;
       wpTag.element.style.setProperty("--tag", report ? "#7b6cff" : "#f07828");
     }
   };
