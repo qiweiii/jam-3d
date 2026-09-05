@@ -15,7 +15,7 @@ export const WHY_STOPS = [
   {
     id: "l2s",
     title: "L2s",
-    body: "Fragmentation, applied: work moves into side rooms, each small enough to stay coherent. Only commitments return to the main room; cross-room calls wait on bridges or proofs.",
+    body: "Fragmentation, applied: work moves into side rooms, each small enough to stay coherent. Data and commitments return to the main room; cross-room calls wait on bridges or proofs.",
     duration: 6,
   },
   {
@@ -33,7 +33,7 @@ export const WHY_STOPS = [
   {
     id: "jam",
     title: "JAM",
-    body: "Each room is a core this slot, one work-package. Execution in that room is synchronous. Across rooms there is a delay, so mostly coherent.",
+    body: "Each room is a core this slot, one work-package. Execution in that room is synchronous. Parallel in-core executions join on-chain state.",
     duration: 7,
   },
 ] as const;

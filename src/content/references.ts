@@ -181,7 +181,10 @@ export const TERMS = {
     width: "18rem",
     bullets: [
       {
-        text: "In-core PVM: authorize + refine on this core. Not service storage.",
+        text: "In-core PVM: authorize + refine on this core.",
+      },
+      {
+        text: "Accumulate is on-chain, a different entry point, with service state.",
       },
       {
         text: "Virtual hardware: 25–50% of a native core, 2 GB of RAM, 2 MB/s of i/o, 6-second segments.",
@@ -563,7 +566,7 @@ export const TERMS = {
     side: "right",
     width: "17rem",
     bullets: [
-      { text: "Execution moves into side systems; only commitments return, so cross-system calls wait on bridges or proofs." },
+      { text: "Execution moves into side systems; data and commitments return, so cross-system calls wait on bridges or proofs." },
       { text: "Gray Paper 0.8.0 · §2.2.1 snark roll-ups", href: gp() },
     ],
   },
@@ -593,6 +596,7 @@ export const TERMS = {
       { text: "In-core: a subset of validators runs refine; scalable, stateless." },
       { text: "On-chain: all validators run accumulate into JAM state." },
       { text: "Inside the same work-package, services can interact synchronously." },
+      { text: "It pipelines a highly scalable, mostly coherent element to a synchronous, fully coherent element. Asynchrony is bounded to the pipeline. Partitioning is cache affinity on shared RAM, not a permanent shard." },
       { text: "Gray Paper 0.8.0 · §1.3 size-coherency antagonism", href: gp() },
       { text: "Demystifying JAM · in-core vs on-chain", href: kian("inside-core-vs-on-the-chain") },
     ],

@@ -470,8 +470,8 @@ export function buildWhy(): Why {
       }
       const cycle = 8;
       const occupy = 0.75;
-      const formLen = 0.035;
-      const dissolveLen = 0.035;
+      const formLen = 0.07;
+      const dissolveLen = 0.07;
       for (const pod of jamPods) {
         const u = ((((t + pod.phase) % cycle) + cycle) % cycle) / cycle;
         let assembled = 0;
