@@ -168,7 +168,11 @@ export const TERMS = {
     width: "16rem",
     bullets: [
       {
-        text: "Work out: the work-report, with results capped at W_R ≈ 48 KB per package.",
+        text: "Exported segments go to the D³L for later work-packages to import. This is separate from the small work-report sent on-chain.",
+      },
+      {
+        text: "Gray Paper 0.8.0 · §14.2 segments",
+        href: "https://github.com/gavofyork/graypaper/blob/v0.8.0/text/work_packages_and_reports.tex#L37-L47",
       },
     ],
   },
@@ -217,7 +221,7 @@ export const TERMS = {
         text: "Everything JAM tracks at one block: services δ, validators κ, Safrole γ, per-core reports ρ, recent history β, slot τ.",
       },
       {
-        text: "17 segments total; each STF stage writes its own segment.",
+        text: "17 logical state components. A transition can update several components; several transitions can contribute to one component.",
       },
       {
         text: "Blocks commit only its 32-octet root H_R = M_σ(σ).",
@@ -354,6 +358,9 @@ export const TERMS = {
       },
       {
         text: "Its modules form a dependency graph; independent branches can run in parallel.",
+      },
+      {
+        text: "The plates here are an index of operations, not a strict execution sequence.",
       },
       {
         text: "Gray Paper 0.8.0 · §4.2 state transition graph",

@@ -1,21 +1,26 @@
 import { Color, InstancedMesh, LineSegments, Mesh, Points, Scene, Vector3 } from "three";
-import { attachBubble, hideOpenBubbles } from "../bubble";
-import { frames, HOME_LOD, LODS, lodIndex, stepLod, type LodId } from "../lod";
-import { TERMS } from "../refs";
-import { buildAnatomy } from "./anatomy";
-import { buildChain } from "./chain";
-import { buildJourney } from "./journey";
-import { buildMachine } from "./machine";
-import { easeOutCubic, slerpDir } from "./math";
-import { createStage } from "./stage";
-import { tickStream } from "./streams";
+import { disposeBubbles, hideOpenBubbles } from "../ui/bubble";
+import { frames, HOME_LOD, LODS, lodIndex, stepLod, type LodId } from "./views";
+import { createNavigation } from "../ui/navigation";
+import { createLearning } from "../ui/learning";
+import { createJourneyControls } from "../ui/journey";
+import { createJourneyPlayback } from "../experience/playback";
+import { attachSceneInput } from "./input";
+import { buildAnatomy } from "../scene/anatomy";
+import { buildChain } from "../scene/chain";
+import { buildJourney } from "../scene/journey";
+import { buildMachine } from "../scene/machine";
+import { easeOutCubic, slerpDir } from "../scene/math";
+import { createStage } from "../scene/stage";
+import { tickStream } from "../scene/streams";
 
 export type Universe = {
   dispose: () => void;
 };
 
 export function createUniverse(host: HTMLElement): Universe {
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduce = motion.matches;
   const scene = new Scene();
   scene.background = new Color(0x050506);
   const stage = createStage(host, scene, reduce);
@@ -40,31 +45,17 @@ export function createUniverse(host: HTMLElement): Universe {
   window.addEventListener("resize", stage.resize);
   stage.resize();
 
-  const mast = document.createElement("div");
-  mast.className = "mast";
-  const mastWord = document.createElement("span");
-  mastWord.innerHTML = `<span>J</span>am`;
-  attachBubble(mastWord, TERMS.jam, "Jam");
-  const mastTitle = document.createElement("p");
-  mastTitle.className = "mast-jam";
-  mastTitle.lang = "en";
-  mastTitle.append(mastWord);
-  mast.append(mastTitle);
-  host.appendChild(mast);
-
-  const lodBar = document.createElement("nav");
-  lodBar.className = "lod";
-  lodBar.setAttribute("aria-label", "scale");
-  host.appendChild(lodBar);
-  const lodBtns = new Map<LodId, HTMLButtonElement>();
-  for (const id of LODS) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = id;
-    b.dataset.lod = id;
-    lodBar.append(b);
-    lodBtns.set(id, b);
-  }
+  const navigation = createNavigation(host, (id) => setLod(id, false));
+  const learning = createLearning(host);
+  const playback = createJourneyPlayback();
+  const journeyControls = createJourneyControls(host, playback);
+  const onMotionChange = () => {
+    reduce = motion.matches;
+    controls.enableDamping = !reduce;
+    if (reduce) playback.play(false);
+    setLod(lod, true);
+  };
+  motion.addEventListener("change", onMotionChange);
 
   let lod: LodId = HOME_LOD;
   let fly = 1;
@@ -115,6 +106,7 @@ export function createUniverse(host: HTMLElement): Universe {
   };
 
   const setLod = (next: LodId, instant: boolean) => {
+    const previous = lod;
     lod = next;
     crossAccum = 0;
     const frame = frames.find((f) => f.id === next);
@@ -147,19 +139,22 @@ export function createUniverse(host: HTMLElement): Universe {
     anatomy.group.visible = next !== "machine";
     chain.group.visible = next === "package" || next === "block" || next === "stf";
     chain.stf.visible = next === "stf";
-    chain.currentBlock.visible = next !== "block";
-    chain.blockDetail.visible = next === "block";
+    const blockFocus = next === "block" || next === "stf";
+    chain.currentBlock.visible = !blockFocus;
+    chain.blockDetail.visible = blockFocus;
     journey.packet.visible = next === "package";
-    mast.classList.toggle("is-hidden", next !== "machine");
+    navigation.update(next);
+    journeyControls.setVisible(next === "package");
+    if (next === "package") {
+      if (previous !== "package") playback.restart();
+      playback.play(!reduce);
+    } else if (previous === "package") {
+      playback.play(false);
+    }
     setTagLod(next);
     tagsDirty = true;
     host.dataset.lod = next;
-    for (const [id, b] of lodBtns) b.setAttribute("aria-current", id === next ? "true" : "false");
   };
-
-  for (const [id, b] of lodBtns) {
-    b.addEventListener("click", () => setLod(id, false));
-  }
 
   /** Continuous dolly along the view axis; pushing past a frame boundary crosses LODs. */
   const dollyBy = (amount: number) => {
@@ -193,42 +188,8 @@ export function createUniverse(host: HTMLElement): Universe {
     camera.position.add(dollyDir);
   };
 
-  const onWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    if (e.deltaY === 0) return;
-    const d = e.ctrlKey ? -e.deltaY : e.deltaY;
-    dollyBy(d * 0.0026);
-  };
-  window.addEventListener("wheel", onWheel, { passive: false, capture: true });
-
-  let lastScale = 1;
-  const onGestureStart = (e: Event) => {
-    e.preventDefault();
-    lastScale = "scale" in e && typeof e.scale === "number" ? e.scale : 1;
-  };
-  const onGestureChange = (e: Event) => {
-    e.preventDefault();
-    const scale = "scale" in e && typeof e.scale === "number" ? e.scale : 1;
-    dollyBy((scale - lastScale) * 8);
-    lastScale = scale;
-  };
-  window.addEventListener("gesturestart", onGestureStart, { passive: false, capture: true });
-  window.addEventListener("gesturechange", onGestureChange, { passive: false, capture: true });
-
-  const onZoomKey = (e: KeyboardEvent) => {
-    if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
-    if (e.key === "+" || e.key === "=") {
-      e.preventDefault();
-      dollyBy(0.25);
-    } else if (e.key === "-") {
-      e.preventDefault();
-      dollyBy(-0.25);
-    } else if (e.key === "0") {
-      e.preventDefault();
-      setLod(lod, false);
-    }
-  };
-  window.addEventListener("keydown", onZoomKey, { capture: true });
+  const detachInput = attachSceneInput(renderer.domElement, dollyBy, (delta) => setLod(stepLod(lod, delta), false));
+  for (const stream of anatomy.streams) tickStream(stream, 0, tmp);
 
   setLod(HOME_LOD, true);
 
@@ -266,9 +227,15 @@ export function createUniverse(host: HTMLElement): Universe {
       anatomy.body.scale.set(1.85 * pulse, 1.15 * pulse, 1.25 * pulse);
       anatomy.outline.scale.copy(anatomy.body.scale).multiplyScalar(1.045);
       anatomy.store.rotation.y += dt * 0.35;
-      journey.update(t);
     }
-    for (const s of anatomy.streams) tickStream(s, t, tmp);
+    if (!reduce && anatomy.group.visible) {
+      for (const stream of anatomy.streams) tickStream(stream, t, tmp);
+    }
+    if (lod === "package") {
+      playback.tick(dt);
+      journey.update(playback.snapshot(), reduce);
+      journeyControls.render();
+    }
     if (controls.enabled) controls.update();
     renderer.render(scene, camera);
     labels.render(scene, camera);
@@ -284,22 +251,31 @@ export function createUniverse(host: HTMLElement): Universe {
     dispose: () => {
       running = false;
       window.removeEventListener("resize", stage.resize);
-      window.removeEventListener("wheel", onWheel, { capture: true });
-      window.removeEventListener("gesturestart", onGestureStart, { capture: true });
-      window.removeEventListener("gesturechange", onGestureChange, { capture: true });
-      window.removeEventListener("keydown", onZoomKey, { capture: true });
+      detachInput();
+      motion.removeEventListener("change", onMotionChange);
+      disposeBubbles(host);
+      scene.traverse((object) => {
+        if ("element" in object && object.element instanceof HTMLElement) disposeBubbles(object.element);
+      });
       renderer.dispose();
       renderer.domElement.remove();
       labels.domElement.remove();
-      lodBar.remove();
-      mast.remove();
+      navigation.dispose();
+      learning.dispose();
+      journeyControls.dispose();
       controls.dispose();
       scene.traverse((obj) => {
-        if (obj instanceof Mesh || obj instanceof Points || obj instanceof InstancedMesh || obj instanceof LineSegments) {
+        if (
+          obj instanceof Mesh ||
+          obj instanceof Points ||
+          obj instanceof InstancedMesh ||
+          obj instanceof LineSegments
+        ) {
           obj.geometry.dispose();
           const m = obj.material;
-          if (Array.isArray(m)) m.forEach((x) => x.dispose());
-          else m.dispose();
+          if (Array.isArray(m)) {
+            for (const material of m) material.dispose();
+          } else m.dispose();
         }
       });
     },

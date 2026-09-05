@@ -15,9 +15,9 @@ import {
   SphereGeometry,
   Vector3,
 } from "three";
-import { wrapTerm } from "../bubble";
-import { HERO, NOW_BLOCK } from "../lod";
-import { TERMS } from "../refs";
+import { wrapTerm } from "../ui/bubble";
+import { HERO, NOW_BLOCK } from "./layout";
+import { TERMS } from "../content/references";
 import { tag } from "./tag";
 
 export type Machine = {

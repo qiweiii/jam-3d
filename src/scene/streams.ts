@@ -59,7 +59,14 @@ export function makeRibbon(curve: CatmullRomCurve3, radius: number, color: numbe
   return new Mesh(geom, mat);
 }
 
-export function makeStream(curve: CatmullRomCurve3, count: number, color: number, size: number, speed: number, spread: number): Stream {
+export function makeStream(
+  curve: CatmullRomCurve3,
+  count: number,
+  color: number,
+  size: number,
+  speed: number,
+  spread: number,
+): Stream {
   const pos = new Float32Array(count * 3);
   // RGBA vertex colors: alpha carries the tail fade (three's vertexAlphas path)
   const colors = new Float32Array(count * 4).fill(1);
@@ -102,4 +109,3 @@ export function tickStream(s: Stream, time: number, tmp: Vector3): void {
   s.points.geometry.getAttribute("position").needsUpdate = true;
   s.points.geometry.getAttribute("color").needsUpdate = true;
 }
-

@@ -1,13 +1,7 @@
-import {
-  AmbientLight,
-  DirectionalLight,
-  PerspectiveCamera,
-  Scene,
-  WebGLRenderer,
-} from "three";
+import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
-import { frames, HOME_LOD } from "../lod";
+import { frames, HOME_LOD } from "../experience/views";
 
 export type Stage = {
   camera: PerspectiveCamera;

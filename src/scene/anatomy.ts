@@ -14,11 +14,12 @@ import {
   TubeGeometry,
   Vector3,
 } from "three";
-import { BLOCK_GAP, HERO, INNER, NOW_BLOCK, PVM_SHIFT_X, type LodId } from "../lod";
+import { BLOCK_GAP, HERO, INNER, NOW_BLOCK, PVM_SHIFT_X } from "./layout";
 import { makeCurve, makeRibbon, makeStream, type Stream } from "./streams";
-import { TERMS, type Term } from "../refs";
+import { TERMS, type Term } from "../content/references";
 import { tag } from "./tag";
-import { wrapTerm } from "../bubble";
+import type { LodId } from "../experience/views";
+import { wrapTerm } from "../ui/bubble";
 
 const PAST = 0xf0c43a;
 const NEXT = 0xf07828;
@@ -171,7 +172,17 @@ export function buildAnatomy(): Anatomy {
   group.add(tail);
 
   const neck = new Mesh(
-    new TubeGeometry(makeCurve([[1.45 + PVM_SHIFT_X, 0.04, 0], [2.15 + PVM_SHIFT_X, 0.08, 0.08], [2.75 + PVM_SHIFT_X, 0.08, 0.12]]), 12, 0.22, 10, false),
+    new TubeGeometry(
+      makeCurve([
+        [1.45 + PVM_SHIFT_X, 0.04, 0],
+        [2.15 + PVM_SHIFT_X, 0.08, 0.08],
+        [2.75 + PVM_SHIFT_X, 0.08, 0.12],
+      ]),
+      12,
+      0.22,
+      10,
+      false,
+    ),
     coreMat,
   );
   group.add(neck);
@@ -255,19 +266,19 @@ export function buildAnatomy(): Anatomy {
     return obj;
   };
   const pastTag = pin(past, 0.78, "past", "2 MB/s in", "#f0c43a", ["core", "package"]);
-  const newTag = pin(incoming, 0.86, "new", "latest root in", "#f07828", ["core", "package"]);
+  const newTag = pin(incoming, 0.86, "new", "work package in", "#f07828", ["core", "package"]);
   const futureTag = pin(future, 0.24, "future", "2 MB/s out", "#e24c1c", ["core", "package"]);
-  const lookupTag = pin(lookup, 0.68, "lookup", "preimage → core", "#5ec8e8", "core");
-  const uploadTag = pin(upload, 0.8, "upload", "preimages into the store", "#5ec8e8", "core");
+  const lookupTag = pin(lookup, 0.68, "lookup", "preimage → core", "#5ec8e8", ["core", "package"]);
+  const uploadTag = pin(upload, 0.8, "upload", "preimages into the store", "#5ec8e8", ["core", "package"]);
   const refineTag = pin(refine, 0.55, "refine", "in-core", "#7b6cff", ["core", "package"]);
   const coreTag = tag("PVM core", "", "#6ec8e6", ["core", "package"]);
   coreTag.position.set(-0.15 + PVM_SHIFT_X, 0.15, 0);
   group.add(coreTag);
   wrapTerm(coreTag.element.querySelector(".tag-title") ?? coreTag.element, "PVM core", TERMS.pvm);
-  const accessTag = tag("state access", "read + write", "#e45a88", "core");
+  const accessTag = tag("state access", "read + write", "#e45a88", ["core", "package"]);
   accessTag.position.set(3.05 + PVM_SHIFT_X, 0.08, 0.12);
   group.add(accessTag);
-  const storeTag = tag("preimage store", "hash → blob", "#5ec8e8", "core");
+  const storeTag = tag("preimage store", "hash → blob", "#5ec8e8", ["core", "package"]);
   storeTag.position.set(4.55, 2.05, 0.12);
   group.add(storeTag);
   wrapTerm(storeTag.element.querySelector(".tag-title") ?? storeTag.element, "preimage store", TERMS.store);

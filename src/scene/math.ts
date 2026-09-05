@@ -1,6 +1,5 @@
 import { Vector3 } from "three";
 
-
 /** Fast start, gentle landing, for camera flights that should feel immediate. */
 export function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3);

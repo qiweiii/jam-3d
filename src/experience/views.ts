@@ -1,39 +1,20 @@
 import { Vector3 } from "three";
+import { nest, HERO, NOW_BLOCK, BLOCK_GAP } from "../scene/layout";
 
 export const LODS = ["machine", "core", "package", "block", "stf"] as const;
 export type LodId = (typeof LODS)[number];
 
 export const HOME_LOD: LodId = "machine";
 
-/** World position of the hero core. Inner anatomy is nested here. */
-export const HERO = new Vector3(1.5, 0.35, 6.5);
-/** Kidney local units → world. Large enough that the block is a neighbour, not another planet. */
-export const INNER = 0.12;
-/** Local horizontal offset that seats the PVM lobe inside the on-chain river. */
-export const PVM_SHIFT_X = 0.35;
-/** This slot, lower-right of the hero core, where the report enters the vertical chain. */
-export const NOW_BLOCK = new Vector3(HERO.x + 0.62, HERO.y - 0.85, HERO.z + 0.12);
-
-/** Compact spacing keeps the descending chain inside the on-chain river. */
-export const BLOCK_GAP = 0.26;
-
-export function nest(local: Vector3): Vector3 {
-  return new Vector3(
-    HERO.x + local.x * INNER,
-    HERO.y + local.y * INNER,
-    HERO.z + local.z * INNER,
-  );
-}
-
 const CORE_POSITION = nest(new Vector3(-2.4, 1.5, 15.2));
 const CORE_TARGET = nest(new Vector3(2.1, 0.2, 0));
 const CORE_VIEW_OFFSET = CORE_POSITION.clone().sub(CORE_TARGET);
-const PACKAGE_TARGET = new Vector3(HERO.x + 0.35, HERO.y - 0.7, HERO.z + 0.1);
-const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET, 2.05);
-const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 0.6));
+const PACKAGE_TARGET = new Vector3(HERO.x + 0.35, HERO.y - 0.4, HERO.z + 0.1);
+const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET, 1.4);
+const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y, NOW_BLOCK.z);
+const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 0.5));
 const STF_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.28));
+const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.5));
 
 export type LodFrame = {
   id: LodId;

@@ -1,5 +1,5 @@
 import { CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import type { LodId } from "../lod";
+import type { LodId } from "../experience/views";
 
 export function tag(title: string, meta: string, color: string, lod: LodId | LodId[]): CSS2DObject {
   const el = document.createElement("div");

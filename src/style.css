@@ -13,6 +13,10 @@ canvas,
   display: block;
 }
 
+canvas {
+  touch-action: none;
+}
+
 .labels {
   pointer-events: none;
 }
@@ -23,7 +27,10 @@ canvas,
   gap: 0.08rem;
   font-family: ui-sans-serif, system-ui, sans-serif;
   color: var(--tag, #f4f1ea);
-  text-shadow: 0 0 6px #050506, 0 0 16px #050506, 0 1px 3px #050506;
+  text-shadow:
+    0 0 6px #050506,
+    0 0 16px #050506,
+    0 1px 3px #050506;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -63,6 +70,9 @@ canvas,
   visibility: hidden;
   box-sizing: border-box;
   width: var(--bubble-w, 16rem);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
   margin: 0;
   white-space: normal;
   text-align: left;
@@ -81,22 +91,6 @@ canvas,
 .bubble.is-open {
   visibility: visible;
   pointer-events: auto;
-}
-
-.bubble-bottom {
-  transform: translateX(-50%);
-}
-
-.bubble-top {
-  transform: translate(-50%, -100%);
-}
-
-.bubble-right {
-  transform: translateY(-50%);
-}
-
-.bubble-left {
-  transform: translate(-100%, -50%);
 }
 
 .bubble-card {
@@ -156,7 +150,9 @@ canvas,
   text-align: center;
   pointer-events: none;
   color: #f3efe6;
-  text-shadow: 0 0 28px #050506, 0 1px 2px #050506;
+  text-shadow:
+    0 0 28px #050506,
+    0 1px 2px #050506;
   transition: opacity 0.6s ease;
 }
 
@@ -196,7 +192,10 @@ canvas,
   border: 0;
   background: transparent;
   color: #6b717a;
-  font: 500 0.68rem/1 ui-sans-serif, system-ui, sans-serif;
+  font:
+    500 0.68rem / 1 ui-sans-serif,
+    system-ui,
+    sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
@@ -205,4 +204,171 @@ canvas,
 
 .lod button[aria-current="true"] {
   color: #f3efe6;
+}
+
+.state-symbol .term {
+  font:
+    9px / 1 Georgia,
+    serif;
+  letter-spacing: 0.01em;
+}
+
+.stf-stage {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.stf-stage .tag-meta {
+  color: color-mix(in srgb, var(--tag, #f4f1ea) 80%, white);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 10px;
+  opacity: 0.95;
+}
+
+#app[data-lod="stf"] .stf-stage .tag-title {
+  font-size: 9.5px;
+}
+
+.stf-stage .tag-meta {
+  font-size: 9px;
+}
+
+.learning,
+.journey-controls {
+  position: fixed;
+  z-index: 4;
+  left: 24px;
+  color: #e8e6e0;
+  font:
+    13px / 1.5 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.learning {
+  top: 24px;
+  width: min(280px, calc(100vw - 48px));
+}
+
+.learning button,
+.journey-controls button {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 6px 0;
+  color: #d5d5d2;
+  font: inherit;
+  cursor: pointer;
+}
+
+.learning-toggle {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+#learning-content {
+  margin-top: 8px;
+  padding: 16px 16px 8px;
+  background: #0d0f12;
+  border: 1px solid #25282d;
+  max-height: calc(100dvh - 150px);
+  overflow: auto;
+}
+
+.learning-copy {
+  height: 136px;
+}
+
+.learning h2 {
+  margin: 8px 0;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.lesson-count,
+.journey-caption {
+  margin: 0;
+  color: #9a9da3;
+  font-size: 11px;
+}
+
+.lesson-body,
+.journey-body {
+  margin: 0;
+  color: #bfc2c7;
+}
+
+.lesson-actions,
+.journey-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.lesson-actions {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lesson-actions a {
+  color: #9a9da3;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.journey-controls {
+  bottom: 70px;
+  width: min(290px, calc(100vw - 48px));
+  padding: 12px 0;
+  background: #050506ef;
+}
+
+.journey-title {
+  margin: 7px 0;
+  font-weight: 500;
+}
+
+.journey-controls button:disabled,
+.learning button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+button:focus-visible,
+.term:focus-visible,
+a:focus-visible,
+canvas:focus-visible {
+  outline: 1px solid #e8e6e0;
+  outline-offset: 4px;
+}
+
+@media (max-width: 600px) {
+  .learning,
+  .journey-controls {
+    left: 16px;
+  }
+  .learning {
+    top: 12px;
+  }
+  .journey-controls {
+    bottom: 58px;
+    font-size: 12px;
+  }
+  .lod {
+    gap: 0.65rem;
+  }
+  .lod button {
+    padding: 10px 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mast {
+    transition: none;
+  }
 }
