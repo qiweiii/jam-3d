@@ -99,8 +99,8 @@ export function buildChain(): Chain {
         label.position.set(0.07, disc.position.y, 0.039);
         wrapTerm(label.element, labelText, {
           side: "right",
-          bullets: [{ text: component.name }, { text: "Gray Paper 0.8.0 · §4.2 state", href: STATE_SOURCE }],
-        }, `${component.symbol}′`);
+          bullets: [{ text: component.note }, { text: "Gray Paper 0.8.0 · §4.2 state", href: STATE_SOURCE }],
+        }, `${component.symbol}′ · ${component.name}`);
         state.add(label);
       }
     }
