@@ -12,7 +12,7 @@ const PACKAGE_POSITION = PACKAGE_TARGET.clone().addScaledVector(CORE_VIEW_OFFSET
 const BLOCK_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y, NOW_BLOCK.z);
 const BLOCK_POSITION = BLOCK_TARGET.clone().add(new Vector3(0, 0, 0.5));
 const STF_TARGET = new Vector3(NOW_BLOCK.x, NOW_BLOCK.y - BLOCK_GAP / 2, NOW_BLOCK.z);
-const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.5));
+const STF_POSITION = STF_TARGET.clone().add(new Vector3(0, 0, 0.38));
 
 export type LodFrame = {
   id: LodId;
