@@ -85,11 +85,23 @@ export function buildWhy(): Why {
   const pulseMat = track(new MeshBasicMaterial({ color: 0xcdeefb }), 1);
   const warmPulseMat = track(new MeshBasicMaterial({ color: 0xf0c48a }), 1);
   const guardMat = track(
-    new MeshStandardMaterial({ color: 0x1c2432, emissive: 0xe45a88, emissiveIntensity: 0.35, roughness: 0.5, metalness: 0.3 }),
+    new MeshStandardMaterial({
+      color: 0x1c2432,
+      emissive: 0xe45a88,
+      emissiveIntensity: 0.35,
+      roughness: 0.5,
+      metalness: 0.3,
+    }),
     1,
   );
   const tableMat = track(
-    new MeshStandardMaterial({ color: 0x141a24, emissive: 0xf07828, emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.35 }),
+    new MeshStandardMaterial({
+      color: 0x141a24,
+      emissive: 0xf07828,
+      emissiveIntensity: 0.35,
+      roughness: 0.4,
+      metalness: 0.35,
+    }),
     1,
   );
   const tableRimMat = track(new MeshBasicMaterial({ color: 0xf07828 }), 0.9);
@@ -111,10 +123,7 @@ export function buildWhy(): Why {
 
   const dottedRoom = (parent: Group, w: number, d: number, h: number) => {
     const edges = new EdgesGeometry(new BoxGeometry(w, h, d));
-    const mat = track(
-      new LineDashedMaterial({ color: 0xf07828, dashSize: 0.07, gapSize: 0.05 }),
-      0.8,
-    );
+    const mat = track(new LineDashedMaterial({ color: 0xf07828, dashSize: 0.07, gapSize: 0.05 }), 0.8);
     const walls = new LineSegments(edges, mat);
     walls.computeLineDistances();
     walls.position.y = h / 2;
@@ -255,16 +264,8 @@ export function buildWhy(): Why {
   {
     const frame = new Group();
     room(frame, 2.7, 1.05, 0.55);
-    const clusterA = [
-      person(frame, -1.0, -0.15),
-      person(frame, -0.84, -0.15),
-      person(frame, -1.14, 0.22),
-    ] as const;
-    const clusterB = [
-      person(frame, 1.0, -0.15),
-      person(frame, 0.84, -0.15),
-      person(frame, 1.14, 0.22),
-    ] as const;
+    const clusterA = [person(frame, -1.0, -0.15), person(frame, -0.84, -0.15), person(frame, -1.14, 0.22)] as const;
+    const clusterB = [person(frame, 1.0, -0.15), person(frame, 0.84, -0.15), person(frame, 1.14, 0.22)] as const;
     for (const cluster of [clusterA, clusterB]) {
       talk(frame, cluster[0], cluster[1], "sync");
       talk(frame, cluster[1], cluster[2], "sync");
@@ -393,7 +394,10 @@ export function buildWhy(): Why {
       const p2 = person(pod, 0.12, -0.04);
       talk(pod, p1, p2, "sync");
       frame.add(pod);
-      const port = pod.position.clone().add(p2).setZ(pod.position.z - 0.14);
+      const port = pod.position
+        .clone()
+        .add(p2)
+        .setZ(pod.position.z - 0.14);
       talk(frame, port, mainPort, "async");
     }
     anchorOf(4, frame);
@@ -414,11 +418,7 @@ export function buildWhy(): Why {
       const pod = new Group();
       pod.position.set(cx, 0, cz);
       dottedRoom(pod, 0.5, 0.42, 0.45);
-      const trio = [
-        person(pod, -0.12, 0.05),
-        person(pod, 0.02, -0.08),
-        person(pod, 0.14, 0.07),
-      ] as const;
+      const trio = [person(pod, -0.12, 0.05), person(pod, 0.02, -0.08), person(pod, 0.14, 0.07)] as const;
       talk(pod, trio[0], trio[1], "sync");
       talk(pod, trio[1], trio[2], "sync");
       frame.add(pod);

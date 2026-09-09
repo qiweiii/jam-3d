@@ -100,11 +100,7 @@ export function createUniverse(host: HTMLElement): Universe {
   /** Keep the address bar a shareable snapshot of stage and step. */
   const updateUrl = () => {
     const step =
-      lod === "why"
-        ? whyPlayback.snapshot().index + 1
-        : lod === "package"
-          ? playback.snapshot().index + 1
-          : null;
+      lod === "why" ? whyPlayback.snapshot().index + 1 : lod === "package" ? playback.snapshot().index + 1 : null;
     history.replaceState(null, "", routeHash(lod, step));
   };
 

@@ -263,7 +263,6 @@ canvas {
   cursor: pointer;
 }
 
-
 .journey-caption {
   margin: 0;
   color: #9a9da3;
@@ -275,7 +274,6 @@ canvas {
   color: #bfc2c7;
 }
 
-
 .journey-actions {
   display: flex;
   align-items: center;
@@ -283,7 +281,6 @@ canvas {
   margin-top: 14px;
   font-size: 12px;
 }
-
 
 .journey-controls {
   bottom: 70px;

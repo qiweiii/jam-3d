@@ -9,15 +9,19 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "biome format --write .",
+    "lint": "biome check ."
   },
   "engines": {
     "node": ">=22"
   },
+  "packageManager": "pnpm@12.3.4",
   "dependencies": {
     "three": "0.185.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.12",
     "@types/three": "0.185.4",
     "typescript": "7.0.2",
     "vite": "8.2.2"

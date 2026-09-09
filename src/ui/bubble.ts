@@ -185,12 +185,7 @@ export function disposeBubbles(root: HTMLElement): void {
 }
 
 /** Wrap the first case-insensitive match of `word` inside `el`. */
-export function wrapTerm(
-  el: HTMLElement,
-  word: string,
-  spec: Term,
-  bubbleLabel?: string,
-): HTMLElement | null {
+export function wrapTerm(el: HTMLElement, word: string, spec: Term, bubbleLabel?: string): HTMLElement | null {
   const src = el.textContent ?? "";
   const i = src.toLowerCase().indexOf(word.toLowerCase());
   if (i < 0) return null;

@@ -97,10 +97,15 @@ export function buildChain(): Chain {
         const label = tag(labelText, "", "#e8e6e0", "block");
         label.element.classList.add("state-symbol");
         label.position.set(0.07, disc.position.y, 0.039);
-        wrapTerm(label.element, labelText, {
-          side: "right",
-          bullets: [{ text: component.note }, { text: "Gray Paper 0.8.0 · §4.2 state", href: STATE_SOURCE }],
-        }, `${component.symbol}′ · ${component.name}`);
+        wrapTerm(
+          label.element,
+          labelText,
+          {
+            side: "right",
+            bullets: [{ text: component.note }, { text: "Gray Paper 0.8.0 · §4.2 state", href: STATE_SOURCE }],
+          },
+          `${component.symbol}′ · ${component.name}`,
+        );
         state.add(label);
       }
     }
@@ -190,7 +195,12 @@ export function buildChain(): Chain {
     stageTag.element.classList.add("stf-stage");
     stageTag.position.set(-0.2, y, 0);
     stf.add(stageTag);
-    wrapTerm(stageTag.element.querySelector(".tag-title") ?? stageTag.element, stage.meta, stage.term);
+    wrapTerm(
+      stageTag.element.querySelector(".tag-title") ?? stageTag.element,
+      stage.meta,
+      stage.term,
+      `${stage.title} · ${stage.meta}`,
+    );
   }
   group.add(stf);
 
