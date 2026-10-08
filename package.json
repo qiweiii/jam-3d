@@ -16,7 +16,6 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@12.3.4",
   "dependencies": {
     "three": "0.185.1"
   },

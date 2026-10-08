@@ -1,4 +1,4 @@
-# JAM machine
+# JAM 3D
 
 A 3D tour of [JAM](https://graypaper.com/) as a machine in space: cores, work packages, the chain.
 
