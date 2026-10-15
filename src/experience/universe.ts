@@ -6,6 +6,7 @@ import { createJourneyControls } from "../ui/journey";
 import { createJourneyPlayback } from "../experience/playback";
 import { parseRoute, routeHash } from "./routes";
 import { attachSceneInput } from "./input";
+import { cameraScale, frameForViewport } from "./framing";
 import { buildAnatomy } from "../scene/anatomy";
 import { buildChain } from "../scene/chain";
 import { buildJourney } from "../scene/journey";
@@ -47,8 +48,13 @@ export function createUniverse(host: HTMLElement): Universe {
   const toDir = new Vector3();
   const flyDir = new Vector3();
 
-  window.addEventListener("resize", stage.resize);
   stage.resize();
+  let viewportWidth = host.clientWidth;
+  let viewportHeight = host.clientHeight;
+  const getFrame = (id: LodId) => {
+    const frame = frames.find((f) => f.id === id);
+    return frame ? frameForViewport(frame, viewportWidth, viewportHeight) : undefined;
+  };
 
   const navigation = createNavigation(host, (id) => setLod(id, false));
   const playback = createJourneyPlayback();
@@ -79,7 +85,7 @@ export function createUniverse(host: HTMLElement): Universe {
   let lod: LodId = initialRoute.lod;
   let fly = 1;
   let flyDur = 0.95;
-  const homeFrame = frames.find((f) => f.id === HOME_LOD);
+  const homeFrame = getFrame(HOME_LOD);
   if (!homeFrame) throw new Error("missing home lod");
   const fromPos = homeFrame.position.clone();
   const toPos = homeFrame.position.clone();
@@ -163,7 +169,7 @@ export function createUniverse(host: HTMLElement): Universe {
       camera.position.copy(toPos);
       controls.target.copy(toTarget);
       controls.enabled = true;
-      const frame = frames.find((f) => f.id === lod);
+      const frame = getFrame(lod);
       if (frame) {
         controls.minDistance = frame.minDist;
         controls.maxDistance = frame.maxDist;
@@ -176,7 +182,7 @@ export function createUniverse(host: HTMLElement): Universe {
     const previous = lod;
     lod = next;
     crossAccum = 0;
-    const frame = frames.find((f) => f.id === next);
+    const frame = getFrame(next);
     if (!frame) return;
     const d0 = Math.max(0.08, camera.position.distanceTo(controls.target));
     const d1 = Math.max(0.08, frame.position.distanceTo(frame.target));
@@ -217,6 +223,27 @@ export function createUniverse(host: HTMLElement): Universe {
     updateUrl();
   };
 
+  const onResize = () => {
+    const previousScale = cameraScale(lod, viewportWidth, viewportHeight);
+    viewportWidth = host.clientWidth;
+    viewportHeight = host.clientHeight;
+    stage.resize();
+    const ratio = cameraScale(lod, viewportWidth, viewportHeight) / previousScale;
+    // Keep manual orbit, pan, zoom and playback position across rotation/resizing.
+    camera.position.sub(controls.target).multiplyScalar(ratio).add(controls.target);
+    fromPos.sub(fromTarget).multiplyScalar(ratio).add(fromTarget);
+    toPos.sub(toTarget).multiplyScalar(ratio).add(toTarget);
+    if (fly >= 1) {
+      const frame = getFrame(lod);
+      if (frame) {
+        controls.minDistance = frame.minDist;
+        controls.maxDistance = frame.maxDist;
+      }
+      controls.update();
+    }
+  };
+  window.addEventListener("resize", onResize);
+
   const onHashChange = () => {
     const route = parseRoute(location.hash);
     if (route.lod !== lod) setLod(route.lod, false);
@@ -227,7 +254,7 @@ export function createUniverse(host: HTMLElement): Universe {
   /** Continuous dolly along the view axis; pushing past a frame boundary crosses LODs. */
   const dollyBy = (amount: number) => {
     if (fly < 1 || amount === 0) return;
-    const frame = frames.find((f) => f.id === lod);
+    const frame = getFrame(lod);
     if (!frame) return;
     const dist = camera.position.distanceTo(controls.target);
     let next = dist * Math.exp(-amount);
@@ -285,7 +312,7 @@ export function createUniverse(host: HTMLElement): Universe {
       whyFade = whyFrom + (whyTo - whyFrom) * e;
       why.setOpacity(whyFade);
       if (fly >= 1) {
-        const frame = frames.find((f) => f.id === lod);
+        const frame = getFrame(lod);
         if (frame) {
           controls.minDistance = frame.minDist;
           controls.maxDistance = frame.maxDist;
@@ -319,7 +346,11 @@ export function createUniverse(host: HTMLElement): Universe {
       if (index !== whyStop) {
         whyStop = index;
         updateUrl();
-        const stopFrame = why.stopFrames[index]!;
+        const stop = why.stopFrames[index]!;
+        const stopFrame = {
+          target: stop.target,
+          position: stop.target.clone().lerp(stop.position, cameraScale("why", viewportWidth, viewportHeight)),
+        };
         const d0 = Math.max(0.08, camera.position.distanceTo(controls.target));
         const d1 = Math.max(0.08, stopFrame.position.distanceTo(stopFrame.target));
         const dur = Math.min(1.5, Math.max(0.55, 0.45 + Math.abs(Math.log(d1 / d0)) * 0.18));
@@ -342,7 +373,7 @@ export function createUniverse(host: HTMLElement): Universe {
   return {
     dispose: () => {
       running = false;
-      window.removeEventListener("resize", stage.resize);
+      window.removeEventListener("resize", onResize);
       detachInput();
       motion.removeEventListener("change", onMotionChange);
       window.removeEventListener("hashchange", onHashChange);

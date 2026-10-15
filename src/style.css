@@ -6,7 +6,7 @@ body {
 }
 
 #app {
-  --footer-row-bottom: 4px;
+  --footer-row-bottom: max(4px, env(safe-area-inset-bottom));
   --footer-row-height: 32px;
 }
 
@@ -324,7 +324,7 @@ canvas {
 }
 
 .lod button[data-lod="why"] {
-  color: #a08670;
+  color: #d6a45f;
 }
 
 .lod button[data-lod="why"][aria-current="true"] {
@@ -427,14 +427,50 @@ canvas:focus-visible {
 @media (max-width: 600px) {
   .journey-controls {
     left: 16px;
-    bottom: 58px;
+    bottom: calc(var(--footer-row-bottom) + var(--footer-row-height) + 16px);
     font-size: 12px;
+    max-height: 38dvh;
+    overflow-y: auto;
   }
   .lod {
     gap: 0.65rem;
   }
   .lod button {
     padding: 10px 2px;
+  }
+  .sources-trigger,
+  .repository-link {
+    top: max(4px, env(safe-area-inset-top));
+    bottom: auto;
+  }
+  .sources-dialog {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+  .sources-panel {
+    padding: 1rem;
+  }
+  .sources-heading h2 {
+    font-size: 0.9rem;
+  }
+  #app[data-lod="machine"] .tag-title {
+    font-size: 9px;
+  }
+  #app[data-lod="core"] .tag-title,
+  #app[data-lod="package"] .tag-title {
+    font-size: 11px;
+  }
+  #app[data-lod="core"] .tag-meta,
+  #app[data-lod="package"] .tag-meta {
+    font-size: 9.5px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .journey-controls {
+    width: min(250px, 32vw);
+    max-height: 50dvh;
+    overflow-y: auto;
   }
 }
 

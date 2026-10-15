@@ -2,6 +2,7 @@ import { AmbientLight, DirectionalLight, PerspectiveCamera, Scene, WebGLRenderer
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
 import { frames, HOME_LOD } from "../experience/views";
+import { cameraScale } from "../experience/framing";
 
 export type Stage = {
   camera: PerspectiveCamera;
@@ -35,6 +36,8 @@ export function createStage(host: HTMLElement, scene: Scene, reduce: boolean): S
     const w = host.clientWidth;
     const h = host.clientHeight;
     camera.aspect = w / Math.max(h, 1);
+    // Portrait framing can put the machine beyond the desktop clipping plane.
+    camera.far = 200 * Math.max(...frames.map((frame) => cameraScale(frame.id, w, h)));
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     labels.setSize(w, h);
