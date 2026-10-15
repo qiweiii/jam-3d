@@ -579,7 +579,7 @@ export const TERMS = {
       },
       { text: "On-chain: all validators run accumulate into JAM state." },
       {
-        text: "Inside the same work-package, services can interact synchronously.",
+        text: "During accumulation, services can exchange deferred transfers within the same block.",
       },
       {
         text: "It pipelines a highly scalable, mostly coherent element to a synchronous, fully coherent element. Asynchrony is bounded to the pipeline. Partitioning is cache affinity on shared RAM, not a permanent shard.",

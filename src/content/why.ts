@@ -33,7 +33,7 @@ export const WHY_STOPS = [
   {
     id: "jam",
     title: "JAM",
-    body: "Each room is a core this slot, one work-package. Execution in that room is synchronous. Parallel in-core executions join on-chain state.",
+    body: "JAM runs work-packages across many cores in parallel, then brings their results together in shared on-chain state: coordination waits for the pipeline, but state need not remain permanently fragmented.",
     duration: 7,
   },
 ] as const;
