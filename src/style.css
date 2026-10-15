@@ -399,6 +399,47 @@ canvas {
   font-size: 12px;
 }
 
+.journey-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 8px 0 -10px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.journey-progress::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #f07828 var(--progress, 0%), #34363c var(--progress, 0%));
+}
+
+.journey-progress::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #f07828 var(--progress, 0%), #34363c var(--progress, 0%));
+}
+
+.journey-progress::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4.5px;
+  border: 0;
+  border-radius: 50%;
+  background: #f07828;
+}
+
+.journey-progress::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: #f07828;
+}
+
 .journey-controls {
   bottom: 70px;
   width: min(290px, calc(100vw - 48px));
@@ -417,6 +458,7 @@ canvas {
 }
 
 button:focus-visible,
+.journey-progress:focus-visible,
 .term:focus-visible,
 a:focus-visible,
 canvas:focus-visible {

@@ -15,6 +15,8 @@ type ControlsOptions = {
   showPlay?: boolean;
   /** Manual tours show Replay only on the final step. */
   replayAtEnd?: boolean;
+  /** Per-step seek bar for the animated package journey. */
+  showProgress?: boolean;
 };
 
 /** Caption panel driving a stop playback; shared by the journey and the why tour. */
@@ -29,17 +31,27 @@ export function createJourneyControls(
   root.setAttribute("aria-label", options.label);
   root.innerHTML = `<p class="journey-caption">${options.caption}</p>
     <p class="journey-title"></p><p class="journey-body"></p>
+    <input class="journey-progress" type="range" min="0" max="1000" step="1" value="0" aria-label="Step progress" title="Click or drag to pause and scrub this step">
     <div class="journey-actions"><button type="button" data-action="back">Back</button><button type="button" data-action="play">Play</button><button type="button" data-action="next">Next</button><button type="button" data-action="replay">Replay</button></div>`;
   host.append(root);
   const back = root.querySelector<HTMLButtonElement>('[data-action="back"]')!;
   const play = root.querySelector<HTMLButtonElement>('[data-action="play"]')!;
   const showPlay = options.showPlay ?? true;
   if (!showPlay) play.remove();
+  const progress = root.querySelector<HTMLInputElement>(".journey-progress")!;
+  if (!options.showProgress) progress.remove();
   const next = root.querySelector<HTMLButtonElement>('[data-action="next"]')!;
   const replay = root.querySelector<HTMLButtonElement>('[data-action="replay"]')!;
+  if (playback.loop) replay.remove();
   let last = "";
   const render = () => {
-    const { index, playing } = playback.snapshot();
+    const { index, playing, elapsed, step } = playback.snapshot();
+    if (options.showProgress) {
+      const fraction = Math.max(0, Math.min(1, elapsed / step.duration));
+      progress.value = String(Math.round(fraction * 1000));
+      progress.style.setProperty("--progress", `${fraction * 100}%`);
+      progress.setAttribute("aria-valuetext", `${Math.round(fraction * 100)}% of step ${index + 1}`);
+    }
     const key = `${index}:${playing}`;
     if (key === last) return;
     last = key;
@@ -51,7 +63,7 @@ export function createJourneyControls(
     replay.hidden = Boolean(options.replayAtEnd) && index !== steps.length - 1;
     back.disabled = index === 0;
     next.textContent = atFinish ? options.finish!.text : "Next";
-    next.disabled = index === steps.length - 1 && !atFinish;
+    next.disabled = index === steps.length - 1 && !atFinish && !playback.loop;
   };
   for (const [button, delta] of [
     [back, -1],
@@ -63,20 +75,29 @@ export function createJourneyControls(
         options.finish.onSelect();
         return;
       }
-      playback.select(index + delta);
+      playback.select(delta > 0 && index === steps.length - 1 && playback.loop ? 0 : index + delta);
       if (showPlay) playback.play(true);
       render();
     });
   }
-  if (showPlay) {
-    play.addEventListener("click", () => {
-      const { index, elapsed, step, playing } = playback.snapshot();
-      if (index === steps.length - 1 && elapsed === step.duration) playback.restart();
-      playback.play(!playing);
+  const togglePlay = () => {
+    const { index, elapsed, step, playing } = playback.snapshot();
+    if (index === steps.length - 1 && elapsed === step.duration) playback.restart();
+    playback.play(!playing);
+    render();
+  };
+  if (showPlay) play.addEventListener("click", togglePlay);
+  if (options.showProgress) {
+    progress.addEventListener("pointerdown", () => {
+      playback.play(false);
+      render();
+    });
+    progress.addEventListener("input", () => {
+      playback.seek((progress.valueAsNumber / 1000) * playback.snapshot().step.duration);
       render();
     });
   }
-  root.querySelector('[data-action="replay"]')!.addEventListener("click", () => {
+  replay.addEventListener("click", () => {
     playback.restart();
     if (showPlay) playback.play(true);
     render();

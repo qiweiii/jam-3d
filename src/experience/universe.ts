@@ -37,7 +37,7 @@ export function createUniverse(host: HTMLElement): Universe {
   const chain = buildChain();
   scene.add(chain.group);
   const journey = buildJourney();
-  scene.add(journey.packet);
+  scene.add(journey.group);
   const why = buildWhy();
   scene.add(why.group);
 
@@ -57,10 +57,11 @@ export function createUniverse(host: HTMLElement): Universe {
   };
 
   const navigation = createNavigation(host, (id) => setLod(id, false));
-  const playback = createJourneyPlayback();
+  const playback = createJourneyPlayback(JOURNEY_STEPS, { loop: true });
   const journeyControls = createJourneyControls(host, playback, JOURNEY_STEPS, {
-    caption: "One package · Successful path",
+    caption: "One package · Across blocks · Successful path",
     label: "Work package journey",
+    showProgress: true,
   });
   const whyPlayback = createJourneyPlayback(WHY_STOPS);
   const whyControls = createJourneyControls(host, whyPlayback, WHY_STOPS, {
@@ -193,12 +194,14 @@ export function createUniverse(host: HTMLElement): Universe {
     whyTo = next === "why" ? 1 : 0;
     beginFly(frame.position, frame.target, dur, !(instant || reduce));
     anatomy.group.visible = next !== "machine" && next !== "why";
+    anatomy.setCutaway(next === "package");
     chain.group.visible = next === "package" || next === "block" || next === "stf";
     chain.stf.visible = next === "stf";
     const blockFocus = next === "block" || next === "stf";
     chain.currentBlock.visible = !blockFocus;
     chain.blockDetail.visible = blockFocus;
-    journey.packet.visible = next === "package";
+    journey.group.visible = next === "package";
+    if (next !== "package") chain.updateJourney(null);
     navigation.update(next);
     journeyControls.setVisible(next === "package");
     whyControls.setVisible(next === "why");
@@ -337,7 +340,7 @@ export function createUniverse(host: HTMLElement): Universe {
         pkgStep = index;
         updateUrl();
       }
-      journey.update(playback.snapshot(), reduce);
+      chain.updateJourney(journey.update(playback.snapshot(), reduce));
       journeyControls.render();
     }
     if (lod === "why") {

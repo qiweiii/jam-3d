@@ -7,13 +7,21 @@ import {
   MeshStandardMaterial,
   TubeGeometry,
 } from "three";
-import { BLOCK_GAP, NOW_BLOCK } from "./layout";
+import {
+  BLOCK_GAP,
+  NOW_BLOCK,
+  CHAIN_RAIL_OFFSET,
+  STATE_DISC_RADIUS,
+  STATE_DISC_HEIGHT,
+  stateComponentY,
+} from "./layout";
 import { wrapTerm } from "../ui/bubble";
 import { TERMS } from "../content/references";
 import { BLOCK_EXTRINSICS, STF_STAGES } from "../content/transitions";
 import { STATE_COMPONENTS, STATE_SOURCE } from "../content/state";
 import { makeCurve } from "./streams";
 import { tag } from "./tag";
+import type { JourneyFrame } from "../experience/journey-state";
 
 export type Chain = {
   group: Group;
@@ -21,10 +29,8 @@ export type Chain = {
   blockDetail: Group;
   stf: Group;
   stateRail: Group;
+  updateJourney: (frame: JourneyFrame | null) => void;
 };
-
-/** Block rail offset left of the chain axis; the state rail mirrors it right. */
-const RAIL_OFFSET = 0.05;
 
 /** The block chain as twin rails in the on-chain river: block cubes and state databases. */
 export function buildChain(): Chain {
@@ -33,8 +39,8 @@ export function buildChain(): Chain {
   group.add(blocks);
   const blockCount = 10;
   const nowBlock = NOW_BLOCK.clone();
-  const blockX = nowBlock.x - RAIL_OFFSET;
-  const stateX = nowBlock.x + RAIL_OFFSET;
+  const blockX = nowBlock.x - CHAIN_RAIL_OFFSET;
+  const stateX = nowBlock.x + CHAIN_RAIL_OFFSET;
   const blockGap = BLOCK_GAP;
   const oldestY = nowBlock.y - (blockCount - 1) * blockGap;
   const blockGeom = new BoxGeometry(0.09, 0.09, 0.09);
@@ -51,6 +57,7 @@ export function buildChain(): Chain {
   );
   currentBlock.position.set(blockX, nowBlock.y, nowBlock.z);
   blocks.add(currentBlock);
+  const historyBlocks = [currentBlock];
 
   for (let i = 1; i < blockCount; i++) {
     const block = new Mesh(
@@ -68,16 +75,23 @@ export function buildChain(): Chain {
     block.position.set(blockX, nowBlock.y - i * blockGap, nowBlock.z);
     block.scale.setScalar(1 - i * 0.04);
     blocks.add(block);
+    historyBlocks.push(block);
   }
 
+  const laterBlockMat = currentBlock.material.clone();
+  laterBlockMat.transparent = true;
+  const laterBlock = new Mesh(blockGeom, laterBlockMat);
+  laterBlock.position.copy(currentBlock.position);
+  laterBlock.visible = false;
+  blocks.add(laterBlock);
+
   const stateRail = new Group();
-  const stateDiscGeom = new CylinderGeometry(0.036, 0.036, 0.006, 20);
-  const discGap = 0.001;
-  const discSpan = stateDiscGeom.parameters.height + discGap;
+  const historyStates: Group[] = [];
+  const stateDiscGeom = new CylinderGeometry(STATE_DISC_RADIUS, STATE_DISC_RADIUS, STATE_DISC_HEIGHT, 20);
   for (let i = 0; i < blockCount; i++) {
     const state = new Group();
     const fresh = i === 0;
-    for (const [d, component] of STATE_COMPONENTS.entries()) {
+    for (const component of STATE_COMPONENTS) {
       const disc = new Mesh(
         stateDiscGeom,
         new MeshStandardMaterial({
@@ -90,7 +104,8 @@ export function buildChain(): Chain {
           opacity: 1 - i * 0.08,
         }),
       );
-      disc.position.y = ((STATE_COMPONENTS.length - 1) / 2 - d) * discSpan;
+      disc.name = component.symbol;
+      disc.position.y = stateComponentY(component.symbol);
       state.add(disc);
       if (fresh) {
         const labelText = `${component.symbol}′ · ${component.name}`;
@@ -112,8 +127,27 @@ export function buildChain(): Chain {
     state.position.set(stateX, nowBlock.y - i * blockGap, nowBlock.z);
     state.scale.setScalar(1 - i * 0.04);
     stateRail.add(state);
+    historyStates.push(state);
   }
+  const laterState = new Group();
+  laterState.position.set(stateX, nowBlock.y, nowBlock.z);
+  const laterDiscs: Mesh<typeof stateDiscGeom, MeshStandardMaterial>[] = [];
+  for (const child of historyStates[0]!.children) {
+    if (!(child instanceof Mesh)) continue;
+    const material = (child.material as MeshStandardMaterial).clone();
+    const disc = new Mesh(stateDiscGeom, material);
+    disc.name = child.name;
+    disc.position.copy(child.position);
+    laterState.add(disc);
+    laterDiscs.push(disc);
+  }
+  laterState.visible = false;
+  stateRail.add(laterState);
   group.add(stateRail);
+  const recordedPendingDisc = historyStates[0]!.getObjectByName("ρ") as Mesh<
+    typeof stateDiscGeom,
+    MeshStandardMaterial
+  >;
 
   const blockDetail = new Group();
   blockDetail.position.set(blockX, nowBlock.y, nowBlock.z);
@@ -229,5 +263,28 @@ export function buildChain(): Chain {
   group.add(stfStatePostTag);
   wrapTerm(stfStatePostTag.element.querySelector(".tag-title") ?? stfStatePostTag.element, "state σ′", TERMS.statePost);
 
-  return { group, currentBlock, blockDetail, stf, stateRail };
+  /** Only the package journey advances time. Block/STF always returns to its static snapshot. */
+  const updateJourney: Chain["updateJourney"] = (frame) => {
+    const advance = frame?.blockAdvance ?? 0;
+    const eased = advance * advance * (3 - 2 * advance);
+    for (const [i, block] of historyBlocks.entries()) {
+      block.position.y = nowBlock.y - (i + eased) * blockGap;
+    }
+    for (const [i, state] of historyStates.entries()) {
+      state.position.y = nowBlock.y - (i + eased) * blockGap;
+    }
+    currentBlock.material.emissiveIntensity = 0.9 - eased * 0.55;
+    recordedPendingDisc.material.emissiveIntensity = frame?.recorded ? 1.6 : 0.55;
+    laterBlock.visible = advance > 0;
+    laterBlockMat.opacity = eased;
+    laterBlock.scale.setScalar(0.6 + 0.4 * eased);
+    laterState.visible = advance > 0;
+    const glow = frame?.accumulation ?? 0;
+    for (const disc of laterDiscs) {
+      disc.material.opacity = eased;
+      disc.material.emissiveIntensity = 0.55 + (disc.name === "δ" ? glow * 2 : 0);
+    }
+  };
+
+  return { group, currentBlock, blockDetail, stf, stateRail, updateJourney };
 }

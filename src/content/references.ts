@@ -333,6 +333,7 @@ export const TERMS = {
       {
         text: "Validators mark the cores whose work-package data they hold.",
       },
+      { text: "These assurances concern reports admitted in earlier blocks, not this block’s new guarantees." },
       {
         text: "Gray Paper 0.8.0 · §11.2 assurances",
         href: gp(),
@@ -346,6 +347,7 @@ export const TERMS = {
       {
         text: "Guarantors submit signed work-reports produced in-core.",
       },
+      { text: "Inclusion places them in pending availability; their results do not yet update service state." },
       {
         text: "Gray Paper 0.8.0 · §11.4 guarantees",
         href: gp(),

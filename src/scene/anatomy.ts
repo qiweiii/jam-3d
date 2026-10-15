@@ -20,6 +20,7 @@ import { TERMS, type Term } from "../content/references";
 import { tag } from "./tag";
 import type { LodId } from "../experience/views";
 import { wrapTerm } from "../ui/bubble";
+import { createCoreShell } from "./core-shell";
 
 const PAST = 0xf0c43a;
 const NEXT = 0xf07828;
@@ -120,6 +121,7 @@ export type Anatomy = {
   outline: Mesh;
   store: Mesh;
   streams: Stream[];
+  setCutaway: (enabled: boolean) => void;
 };
 
 /** The hero core, cut open: PVM body + lobe into the on-chain band, preimage store, streams. */
@@ -129,13 +131,14 @@ export function buildAnatomy(): Anatomy {
   group.scale.setScalar(INNER);
 
   const coreGeom = new SphereGeometry(1, 48, 48);
-  const coreMat = new MeshStandardMaterial({
+  const shell = createCoreShell({
     color: 0x0c1a22,
     emissive: CORE,
     emissiveIntensity: 0.55,
     roughness: 0.28,
     metalness: 0.35,
   });
+  const coreMat = shell.material;
   const body = new Mesh(coreGeom, coreMat);
   body.scale.set(1.85, 1.15, 1.25);
   body.position.x = PVM_SHIFT_X;
@@ -143,7 +146,7 @@ export function buildAnatomy(): Anatomy {
 
   const outline = new Mesh(
     coreGeom,
-    new MeshBasicMaterial({ color: 0xf4f1ea, side: BackSide, transparent: true, opacity: 0.22 }),
+    new MeshBasicMaterial({ color: 0xf4f1ea, side: BackSide, transparent: true, opacity: 0.22, depthWrite: false }),
   );
   outline.scale.copy(body.scale).multiplyScalar(1.045);
   outline.position.copy(body.position);
@@ -293,5 +296,9 @@ export function buildAnatomy(): Anatomy {
   wrapTitle(uploadTag, "upload", TERMS.upload);
   wrapTerm(lookupTag.element.querySelector(".tag-meta") ?? lookupTag.element, "preimage", TERMS.preimage);
 
-  return { group, body, outline, store, streams };
+  const setCutaway = (enabled: boolean) => {
+    shell.setCutaway(enabled);
+    outline.material.opacity = enabled ? 0.08 : 0.22;
+  };
+  return { group, body, outline, store, streams, setCutaway };
 }
