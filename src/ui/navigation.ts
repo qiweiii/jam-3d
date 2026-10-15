@@ -1,12 +1,14 @@
 import { LODS, type LodId } from "../experience/views";
 import { TERMS } from "../content/references";
 import { attachBubble } from "./bubble";
+import { createSources } from "./sources";
 
 export function createNavigation(host: HTMLElement, onSelect: (id: LodId) => void) {
   const mast = document.createElement("div");
   mast.className = "mast";
   mast.innerHTML = `<p class="mast-jam" lang="en"><span><span>J</span>am</span></p>`;
   attachBubble(mast.querySelector("p > span")!, TERMS.jam, "Jam");
+  const sources = createSources(host);
   const bar = document.createElement("nav");
   bar.className = "lod";
   bar.setAttribute("aria-label", "scale");
@@ -38,6 +40,7 @@ export function createNavigation(host: HTMLElement, onSelect: (id: LodId) => voi
     dispose() {
       mast.remove();
       bar.remove();
+      sources.dispose();
     },
   };
 }
