@@ -1,0 +1,36 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #050506;
+}
+
+#app {
+  --footer-row-bottom: max(4px, env(safe-area-inset-bottom));
+  --footer-row-height: 32px;
+}
+
+#app,
+canvas,
+.labels {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.labels {
+  pointer-events: none;
+}
+
+button:focus-visible,
+.journey-progress:focus-visible,
+.term:focus-visible,
+a:focus-visible,
+canvas:focus-visible {
+  outline: 1px solid #e8e6e0;
+  outline-offset: 4px;
+}

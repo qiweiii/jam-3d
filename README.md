@@ -21,3 +21,11 @@ Then open the URL Vite prints (usually `http://localhost:5173`).
 pnpm build    # static files in dist/
 pnpm preview  # serve that build
 ```
+
+## Development
+
+```bash
+pnpm test     # deterministic state, geometry and interaction tests
+pnpm lint     # formatting and lint checks
+pnpm test:browser # browser smoke checks against your already-running dev server
+```

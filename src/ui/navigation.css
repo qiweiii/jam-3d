@@ -1,0 +1,97 @@
+@font-face {
+  font-family: "Computer Modern";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/cmunrm.ttf") format("truetype");
+}
+
+.mast {
+  position: fixed;
+  z-index: 2;
+  top: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+  color: #f3efe6;
+  text-shadow:
+    0 0 28px #050506,
+    0 1px 2px #050506;
+  transition: opacity 0.6s ease;
+}
+
+.mast-jam {
+  margin: 0;
+  font-family: "Computer Modern", Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  font-weight: 400;
+  font-variant: small-caps;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.mast-jam .term > span:first-child {
+  position: relative;
+  top: 0.09em;
+}
+
+.mast.is-hidden,
+.mast.is-hidden .term {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lod {
+  position: fixed;
+  z-index: 3;
+  left: 50%;
+  bottom: var(--footer-row-bottom);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  height: var(--footer-row-height);
+  gap: 0.85rem;
+}
+
+.lod button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #6b717a;
+  font:
+    500 0.68rem / 1 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.2rem;
+}
+
+.lod button[aria-current="true"] {
+  color: #f3efe6;
+}
+
+.lod button[data-lod="why"] {
+  color: #d6a45f;
+}
+
+.lod button[data-lod="why"][aria-current="true"] {
+  color: #f07828;
+}
+
+@media (max-width: 600px) {
+  .lod {
+    gap: 0.65rem;
+  }
+  .lod button {
+    padding: 10px 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mast {
+    transition: none;
+  }
+}

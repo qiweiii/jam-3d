@@ -1,0 +1,23 @@
+.state-symbol .term {
+  font:
+    9px / 1 Georgia,
+    serif;
+  letter-spacing: 0.01em;
+}
+
+.stf-stage {
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.stf-stage .tag-meta {
+  color: color-mix(in srgb, var(--tag, #f4f1ea) 80%, white);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 9px;
+  opacity: 0.95;
+}
+
+#app[data-lod="stf"] .stf-stage .tag-title {
+  font-size: 9.5px;
+}

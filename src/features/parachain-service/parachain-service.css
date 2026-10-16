@@ -1,0 +1,67 @@
+.parachain-heading {
+  position: fixed;
+  z-index: 4;
+  top: 24px;
+  left: 24px;
+  color: #e8e6e0;
+  font:
+    12px / 1.5 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.parachain-heading h1 {
+  margin: 12px 0 2px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.parachain-heading button {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: #bfc2c7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.tag[data-lod="parachain"] {
+  align-items: center;
+  text-align: center;
+}
+
+.tag.parachain-state-layer {
+  align-items: flex-end;
+  text-align: right;
+}
+
+#app[data-lod="parachain"] .tag-title {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 600px) {
+  .parachain-heading {
+    top: 16px;
+    left: 16px;
+  }
+  #app[data-lod="parachain"] .tag-title {
+    font-size: 11px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  #app[data-lod="parachain"] .tag-title {
+    font-size: 11px;
+  }
+  #app[data-lod="parachain"] .journey-controls {
+    top: 100px;
+    bottom: 52px;
+    max-height: none;
+    font-size: 12px;
+  }
+  #app[data-lod="parachain"] .journey-body {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}

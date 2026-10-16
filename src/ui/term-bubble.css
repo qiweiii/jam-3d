@@ -1,0 +1,70 @@
+.term {
+  position: relative;
+  display: inline-block;
+  pointer-events: auto;
+  cursor: help;
+  border-bottom: 1px dotted color-mix(in srgb, var(--tag, #f4f1ea) 70%, transparent);
+}
+
+.term-plain {
+  border-bottom: 0;
+}
+
+.bubble {
+  position: fixed;
+  z-index: 20;
+  visibility: hidden;
+  box-sizing: border-box;
+  width: var(--bubble-w, 16rem);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  margin: 0;
+  white-space: normal;
+  text-align: left;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.35;
+  color: #e8e6e0;
+  text-shadow: none;
+  pointer-events: none;
+  user-select: text;
+  cursor: text;
+}
+
+.bubble.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.bubble-card {
+  padding: 0.5rem 0.7rem 0.6rem;
+  background: #12141a;
+  border: 1px solid #2a3140;
+}
+
+.bubble-title {
+  margin: 0 0 0.4rem;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #f3efe6;
+}
+
+.bubble ul {
+  margin: 0;
+  padding: 0 0 0 1rem;
+}
+
+.bubble li + li {
+  margin-top: 0.35rem;
+}
+
+.bubble a {
+  color: #8ec8e0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}

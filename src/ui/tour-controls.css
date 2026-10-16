@@ -1,0 +1,112 @@
+.journey-controls {
+  position: fixed;
+  z-index: 4;
+  left: 24px;
+  bottom: 70px;
+  width: min(290px, calc(100vw - 48px));
+  padding: 12px 0;
+  background: #050506ef;
+  color: #e8e6e0;
+  font:
+    13px / 1.5 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.journey-controls button {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 6px 0;
+  color: #d5d5d2;
+  font: inherit;
+  cursor: pointer;
+}
+
+.journey-controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.journey-caption {
+  margin: 0;
+  color: #9a9da3;
+  font-size: 11px;
+}
+
+.journey-title {
+  margin: 7px 0;
+  font-weight: 500;
+}
+
+.journey-body {
+  margin: 0;
+  color: #bfc2c7;
+}
+
+.journey-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.journey-progress {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  margin: 8px 0 -10px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+.journey-progress::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #f07828 var(--progress, 0%), #34363c var(--progress, 0%));
+}
+
+.journey-progress::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, #f07828 var(--progress, 0%), #34363c var(--progress, 0%));
+}
+
+.journey-progress::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4.5px;
+  border: 0;
+  border-radius: 50%;
+  background: #f07828;
+}
+
+.journey-progress::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: #f07828;
+}
+
+@media (max-width: 600px) {
+  .journey-controls {
+    left: 16px;
+    bottom: calc(var(--footer-row-bottom) + var(--footer-row-height) + 16px);
+    font-size: 12px;
+    max-height: 38dvh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .journey-controls {
+    width: min(250px, 32vw);
+    max-height: 50dvh;
+    overflow-y: auto;
+  }
+}

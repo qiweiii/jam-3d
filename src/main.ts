@@ -1,7 +1,7 @@
-import "./style.css";
-import { createUniverse } from "./experience/universe";
+import "./styles/main.css";
+import { createApp } from "./app/create-app";
 
 const app = document.getElementById("app");
 if (!app) throw new Error("missing #app");
-const universe = createUniverse(app);
-if (import.meta.hot) import.meta.hot.dispose(() => universe.dispose());
+const application = createApp(app);
+if (import.meta.hot) import.meta.hot.dispose(() => application.dispose());

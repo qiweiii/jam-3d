@@ -1,0 +1,127 @@
+.sources-trigger,
+.repository-link {
+  position: fixed;
+  z-index: 3;
+  bottom: var(--footer-row-bottom);
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: var(--footer-row-height);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #a3a8b0;
+  font:
+    500 0.75rem / 1 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  cursor: pointer;
+}
+
+.sources-trigger {
+  right: 34px;
+}
+
+.sources-trigger:hover,
+.repository-link:hover {
+  color: #f3efe6;
+}
+
+.sources-trigger svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sources-dialog {
+  width: min(28rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #e8e6e0;
+  font:
+    13px / 1.5 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+.sources-dialog::backdrop {
+  background: #050506b8;
+}
+
+.sources-panel {
+  padding: 1.5rem;
+  border: 1px solid #2a3140;
+  border-radius: 8px;
+  background: #12141a;
+}
+
+.sources-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sources-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.sources-close {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: #bfc2c7;
+  font:
+    24px / 1 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  cursor: pointer;
+}
+
+.sources-panel a {
+  color: #8ec8e0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sources-panel a:hover {
+  color: #f3efe6;
+}
+
+.sources-list {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sources-list p {
+  margin: 0.2rem 0 0;
+  color: #a3a8b0;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .sources-trigger,
+  .repository-link {
+    top: max(4px, env(safe-area-inset-top));
+    bottom: auto;
+  }
+  .sources-dialog {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+  .sources-panel {
+    padding: 1rem;
+  }
+  .sources-heading h2 {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,26 @@
+.service-entry {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-shadow: inherit;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.service-entry:hover {
+  color: #f3efe6;
+}
+
+@media (max-width: 600px) {
+  .service-entry {
+    transform: translateY(-14px);
+  }
+  #app[data-lod="machine"] .tag-title {
+    font-size: 9px;
+  }
+}

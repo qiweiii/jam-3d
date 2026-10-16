@@ -1,0 +1,30 @@
+.tag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  color: var(--tag, #f4f1ea);
+  text-shadow:
+    0 0 6px #050506,
+    0 0 16px #050506,
+    0 1px 3px #050506;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tag-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tag-meta {
+  font-size: 10px;
+  opacity: 0.72;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag.is-hidden {
+  display: none;
+  pointer-events: none;
+}

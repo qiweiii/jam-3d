@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "test": "node scripts/test.mjs",
+    "test:browser": "node scripts/browser-smoke.mjs",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write .",
     "lint": "biome check ."
