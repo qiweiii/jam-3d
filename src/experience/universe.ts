@@ -17,6 +17,11 @@ import { WHY_STOPS } from "../content/why";
 import { easeOutCubic, slerpDir } from "../scene/math";
 import { createStage } from "../scene/stage";
 import { tickStream } from "../scene/streams";
+import { buildParachain } from "../scene/parachain";
+import { PARACHAIN_STEPS } from "../content/parachain";
+import { parachainFrame } from "./parachain-state";
+import { attachSceneLink } from "./scene-link";
+import { createParachainHeader } from "../ui/parachain";
 
 export type Universe = {
   dispose: () => void;
@@ -32,7 +37,7 @@ export function createUniverse(host: HTMLElement): Universe {
 
   const anatomy = buildAnatomy();
   scene.add(anatomy.group);
-  const machine = buildMachine();
+  const machine = buildMachine(() => setLod("parachain", false));
   scene.add(machine.group);
   const chain = buildChain();
   scene.add(chain.group);
@@ -40,6 +45,11 @@ export function createUniverse(host: HTMLElement): Universe {
   scene.add(journey.group);
   const why = buildWhy();
   scene.add(why.group);
+  const parachain = buildParachain(() => {
+    parachainPlayback.play(false);
+    parachainControls.render();
+  });
+  scene.add(parachain.group);
 
   let running = true;
   let last = performance.now();
@@ -51,6 +61,7 @@ export function createUniverse(host: HTMLElement): Universe {
   stage.resize();
   let viewportWidth = host.clientWidth;
   let viewportHeight = host.clientHeight;
+  parachain.resize(viewportWidth, viewportHeight);
   const getFrame = (id: LodId) => {
     const frame = frames.find((f) => f.id === id);
     return frame ? frameForViewport(frame, viewportWidth, viewportHeight) : undefined;
@@ -71,12 +82,21 @@ export function createUniverse(host: HTMLElement): Universe {
     replayAtEnd: true,
     finish: { text: "Finish", onSelect: () => setLod("machine", false) },
   });
+  const parachainPlayback = createJourneyPlayback(PARACHAIN_STEPS);
+  const parachainControls = createJourneyControls(host, parachainPlayback, PARACHAIN_STEPS, {
+    label: "Parachain Service flow",
+    showProgress: true,
+    replayAtEnd: true,
+    hideNextAtEnd: true,
+  });
+  const parachainHeader = createParachainHeader(host, () => setLod("machine", false));
   const onMotionChange = () => {
     reduce = motion.matches;
     controls.enableDamping = !reduce;
     if (reduce) {
       playback.play(false);
       whyPlayback.play(false);
+      parachainPlayback.play(false);
     }
     setLod(lod, true);
   };
@@ -102,25 +122,33 @@ export function createUniverse(host: HTMLElement): Universe {
   let whyFade = 0;
   let whyStop = -1;
   let pkgStep = -1;
+  let parachainStep = -1;
   let tagsDirty = true;
 
   /** Keep the address bar a shareable snapshot of stage and step. */
   const updateUrl = () => {
     const step =
-      lod === "why" ? whyPlayback.snapshot().index + 1 : lod === "package" ? playback.snapshot().index + 1 : null;
+      lod === "why"
+        ? whyPlayback.snapshot().index + 1
+        : lod === "package"
+          ? playback.snapshot().index + 1
+          : lod === "parachain"
+            ? parachainPlayback.snapshot().index + 1
+            : null;
     history.replaceState(null, "", routeHash(lod, step));
   };
 
   const applyStep = (step: number) => {
     if (lod === "why") whyPlayback.select(step - 1);
     else if (lod === "package") playback.select(step - 1);
+    else if (lod === "parachain") parachainPlayback.select(step - 1);
   };
 
   const outerAmount = (id: LodId): number => {
     if (id === "machine") return 1;
     if (id === "core") return 0.12;
     if (id === "package") return 0.1;
-    if (id === "why") return 0;
+    if (id === "why" || id === "parachain") return 0;
     return 0.04;
   };
 
@@ -182,6 +210,7 @@ export function createUniverse(host: HTMLElement): Universe {
   const setLod = (next: LodId, instant: boolean) => {
     const previous = lod;
     lod = next;
+    renderer.domElement.style.cursor = "";
     crossAccum = 0;
     const frame = getFrame(next);
     if (!frame) return;
@@ -193,7 +222,8 @@ export function createUniverse(host: HTMLElement): Universe {
     whyFrom = whyFade;
     whyTo = next === "why" ? 1 : 0;
     beginFly(frame.position, frame.target, dur, !(instant || reduce));
-    anatomy.group.visible = next !== "machine" && next !== "why";
+    machine.group.visible = next !== "parachain";
+    anatomy.group.visible = next !== "machine" && next !== "why" && next !== "parachain";
     anatomy.setCutaway(next === "package");
     chain.group.visible = next === "package" || next === "block" || next === "stf";
     chain.stf.visible = next === "stf";
@@ -205,6 +235,13 @@ export function createUniverse(host: HTMLElement): Universe {
     navigation.update(next);
     journeyControls.setVisible(next === "package");
     whyControls.setVisible(next === "why");
+    parachain.group.visible = next === "parachain";
+    parachainHeader.setVisible(next === "parachain");
+    parachainControls.setVisible(next === "parachain");
+    if (next === "parachain") {
+      if (previous !== "parachain") parachainPlayback.restart();
+      parachainPlayback.play(!reduce);
+    } else if (previous === "parachain") parachainPlayback.play(false);
     if (next === "package") {
       if (previous !== "package") playback.restart();
       playback.play(!reduce);
@@ -231,6 +268,7 @@ export function createUniverse(host: HTMLElement): Universe {
     viewportWidth = host.clientWidth;
     viewportHeight = host.clientHeight;
     stage.resize();
+    parachain.resize(viewportWidth, viewportHeight);
     const ratio = cameraScale(lod, viewportWidth, viewportHeight) / previousScale;
     // Keep manual orbit, pan, zoom and playback position across rotation/resizing.
     camera.position.sub(controls.target).multiplyScalar(ratio).add(controls.target);
@@ -288,6 +326,13 @@ export function createUniverse(host: HTMLElement): Universe {
   };
 
   const detachInput = attachSceneInput(renderer.domElement, dollyBy, (delta) => setLod(stepLod(lod, delta), false));
+  const detachServiceLink = attachSceneLink(
+    renderer.domElement,
+    camera,
+    machine.parachainCartridge,
+    () => lod === "machine" && fly >= 1,
+    () => setLod("parachain", false),
+  );
   for (const stream of anatomy.streams) tickStream(stream, 0, tmp);
 
   setLod(initialRoute.lod, true);
@@ -362,6 +407,18 @@ export function createUniverse(host: HTMLElement): Universe {
       if (why.group.visible && !reduce) why.update(t);
       whyControls.render();
     }
+    if (lod === "parachain") {
+      const before = parachainPlayback.snapshot();
+      if (reduce && !before.scrubbed) parachainPlayback.seek(before.step.duration);
+      parachainPlayback.tick(dt);
+      const state = parachainPlayback.snapshot();
+      if (state.index !== parachainStep) {
+        parachainStep = state.index;
+        updateUrl();
+      }
+      parachain.update(parachainFrame(state.step, state.elapsed, reduce && !state.scrubbed));
+      parachainControls.render();
+    }
     if (controls.enabled) controls.update();
     renderer.render(scene, camera);
     labels.render(scene, camera);
@@ -378,6 +435,7 @@ export function createUniverse(host: HTMLElement): Universe {
       running = false;
       window.removeEventListener("resize", onResize);
       detachInput();
+      detachServiceLink();
       motion.removeEventListener("change", onMotionChange);
       window.removeEventListener("hashchange", onHashChange);
       disposeBubbles(host);
@@ -390,6 +448,8 @@ export function createUniverse(host: HTMLElement): Universe {
       navigation.dispose();
       journeyControls.dispose();
       whyControls.dispose();
+      parachainControls.dispose();
+      parachainHeader.dispose();
       controls.dispose();
       scene.traverse((obj) => {
         if (

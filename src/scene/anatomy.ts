@@ -225,7 +225,7 @@ export function buildAnatomy(): Anatomy {
     [4.4, 1.35, 0.1],
     [2.25, 1.5, 0.02],
     [1.55, 1.0, 0],
-    [0.2, 0.55, 0],
+    [1.5, 1.0, 0],
   ]);
   const upload = makeCurve([
     [9.0, 7.0, 0.2],
@@ -243,15 +243,17 @@ export function buildAnatomy(): Anatomy {
   group.add(makeRibbon(future, 0.08, FUTURE, 0.22));
   group.add(makeRibbon(lookup, 0.04, LOOKUP, 0.35));
   group.add(makeRibbon(upload, 0.035, LOOKUP, 0.28));
-  group.add(makeRibbon(refine, 0.05, PURPLE, 0.4));
+  const refineRibbon = makeRibbon(refine, 0.05, PURPLE, 0.4);
+  group.add(refineRibbon);
 
+  const refineStream = makeStream(refine, 90, PURPLE, 0.03, 0.6, 0.02);
   const streams: Stream[] = [
     makeStream(past, 420, PAST, 0.048, 0.22, 0.07),
     makeStream(incoming, 360, NEXT, 0.042, 0.28, 0.06),
     makeStream(future, 380, FUTURE, 0.048, 0.24, 0.07),
     makeStream(lookup, 220, LOOKUP, 0.037, 0.45, 0.04),
     makeStream(upload, 180, LOOKUP, 0.034, 0.5, 0.03),
-    makeStream(refine, 90, PURPLE, 0.03, 0.6, 0.02),
+    refineStream,
   ];
   for (const s of streams) group.add(s.points);
 
@@ -299,6 +301,8 @@ export function buildAnatomy(): Anatomy {
   const setCutaway = (enabled: boolean) => {
     shell.setCutaway(enabled);
     outline.material.opacity = enabled ? 0.08 : 0.22;
+    refineRibbon.visible = !enabled;
+    refineStream.points.visible = !enabled;
   };
   return { group, body, outline, store, streams, setCutaway };
 }

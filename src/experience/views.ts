@@ -72,6 +72,14 @@ export const frames: LodFrame[] = [
     minDist: 1.2,
     maxDist: 34,
   },
+  {
+    id: "parachain",
+    label: "parachain service",
+    position: new Vector3(-46, 0.35, 14),
+    target: new Vector3(-46, 0.35, 0),
+    minDist: 9,
+    maxDist: 26,
+  },
 ];
 
 export function lodIndex(id: LodId): number {

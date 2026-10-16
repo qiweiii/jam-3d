@@ -32,6 +32,7 @@ export type Machine = {
   heroMat: MeshStandardMaterial;
   heroShell: Mesh;
   architecture: Group;
+  parachainCartridge: Mesh;
   architectureMaterials: Array<{
     material: MeshBasicMaterial | MeshStandardMaterial;
     opacity: number;
@@ -39,7 +40,7 @@ export type Machine = {
 };
 
 /** The whole JAM at machine scale: hull, ghost cores, hero shell, wallpaper rings. */
-export function buildMachine(): Machine {
+export function buildMachine(onParachainSelect: () => void): Machine {
   const group = new Group();
 
   const wallpaper = new Group();
@@ -177,10 +178,11 @@ export function buildMachine(): Machine {
   architecture.add(hardware);
   const serviceGeom = new BoxGeometry(4, 0.78, 3);
   const services = [
-    { title: "Service A", x: hull.position.x - 6, color: 0xe45a88 },
-    { title: "CoreChains", x: hull.position.x, color: 0xd6b45f },
+    { title: "Parachain Service", x: hull.position.x - 6, color: 0xe45a88 },
+    { title: "Service A", x: hull.position.x, color: 0xd6b45f },
     { title: "Service B", x: hull.position.x + 6, color: 0x69c99b },
   ] as const;
+  let parachainCartridge: Mesh | undefined;
   for (const service of services) {
     const material = rememberOpacity(
       new MeshStandardMaterial({
@@ -198,6 +200,12 @@ export function buildMachine(): Machine {
     cartridge.position.set(service.x, hull.position.y + 5.5, hull.position.z);
     architecture.add(cartridge);
     const serviceTag = tag(service.title, "", `#${service.color.toString(16).padStart(6, "0")}`, "machine");
+    if (service.title === "Parachain Service") {
+      parachainCartridge = cartridge;
+      serviceTag.element.innerHTML =
+        '<button type="button" class="service-entry" aria-label="Explore Parachain Service"><span class="tag-title">Parachain Service</span><span class="tag-title" aria-hidden="true">↗</span></button>';
+      serviceTag.element.querySelector("button")!.addEventListener("click", onParachainSelect);
+    }
     serviceTag.position.set(service.x, hull.position.y + 6.2, hull.position.z);
     architecture.add(serviceTag);
   }
@@ -240,6 +248,7 @@ export function buildMachine(): Machine {
     heroMat,
     heroShell,
     architecture,
+    parachainCartridge: parachainCartridge!,
     architectureMaterials,
   };
 }

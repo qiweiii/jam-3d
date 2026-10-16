@@ -1,11 +1,11 @@
 import { HOME_LOD, LODS, type LodId } from "./stages.ts";
 export type Route = {
   lod: LodId;
-  /** 1-based step index for staged views (why, package); null when absent. */
+  /** 1-based step index for staged views; null when absent. */
   step: number | null;
 };
 
-const KNOWN: readonly string[] = [...LODS, "why"];
+const KNOWN: readonly string[] = [...LODS, "why", "parachain"];
 
 /** `#/why?step=3` → { lod: "why", step: 3 }; unknown stages fall back to the home view. */
 export function parseRoute(hash: string): Route {

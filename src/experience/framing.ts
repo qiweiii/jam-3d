@@ -9,6 +9,7 @@ const FRAMING_ASPECT: Record<LodId, number> = {
   block: 1.2,
   stf: 0.8,
   why: 1.1,
+  parachain: 0.9,
 };
 
 export function cameraScale(id: LodId, width: number, height: number): number {

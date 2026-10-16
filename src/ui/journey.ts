@@ -7,7 +7,7 @@ export type CaptionStep = {
 };
 
 type ControlsOptions = {
-  caption: string;
+  caption?: string;
   label: string;
   /** When set, the last step's Next becomes this exit button. */
   finish?: { text: string; onSelect: () => void };
@@ -15,6 +15,8 @@ type ControlsOptions = {
   showPlay?: boolean;
   /** Manual tours show Replay only on the final step. */
   replayAtEnd?: boolean;
+  /** Hide Next on the final step when the scene has its own exit link. */
+  hideNextAtEnd?: boolean;
   /** Per-step seek bar for the animated package journey. */
   showProgress?: boolean;
 };
@@ -29,7 +31,8 @@ export function createJourneyControls(
   const root = document.createElement("section");
   root.className = "journey-controls";
   root.setAttribute("aria-label", options.label);
-  root.innerHTML = `<p class="journey-caption">${options.caption}</p>
+  const heading = options.caption ? `<p class="journey-caption">${options.caption}</p>` : "";
+  root.innerHTML = `${heading}
     <p class="journey-title"></p><p class="journey-body"></p>
     <input class="journey-progress" type="range" min="0" max="1000" step="1" value="0" aria-label="Step progress" title="Click or drag to pause and scrub this step">
     <div class="journey-actions"><button type="button" data-action="back">Back</button><button type="button" data-action="play">Play</button><button type="button" data-action="next">Next</button><button type="button" data-action="replay">Replay</button></div>`;
@@ -63,6 +66,7 @@ export function createJourneyControls(
     replay.hidden = Boolean(options.replayAtEnd) && index !== steps.length - 1;
     back.disabled = index === 0;
     next.textContent = atFinish ? options.finish!.text : "Next";
+    next.hidden = Boolean(options.hideNextAtEnd) && index === steps.length - 1;
     next.disabled = index === steps.length - 1 && !atFinish && !playback.loop;
   };
   for (const [button, delta] of [

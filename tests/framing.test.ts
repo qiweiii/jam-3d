@@ -4,7 +4,7 @@ import { Vector3 } from "three";
 import { cameraScale, frameForViewport } from "../src/experience/framing.ts";
 import type { LodId } from "../src/experience/stages.ts";
 
-const stages: LodId[] = ["machine", "core", "package", "block", "stf", "why"];
+const stages: LodId[] = ["machine", "core", "package", "block", "stf", "why", "parachain"];
 
 test("desktop framing stays unchanged except for a closer STF view", () => {
   for (const id of stages) assert.equal(cameraScale(id, 1440, 900), id === "stf" ? 0.9 : 1);
